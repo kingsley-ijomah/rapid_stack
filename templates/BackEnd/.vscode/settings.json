@@ -1,0 +1,18 @@
+{
+  "ruby.format": "rubocop",
+  "ruby.lint": {
+    "rubocop": true
+  },
+  "[ruby]": {
+    "editor.defaultFormatter": "misogi.ruby-rubocop",
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "editor.rulers": [120],
+    "editor.semanticHighlighting.enabled": true
+  }
+}

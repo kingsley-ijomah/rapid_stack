@@ -1,0 +1,83 @@
+# This is the docker-compose file for the Graylog server
+
+services:
+  # ------------------------------------------------
+  # MongoDB (stores Graylog configurations/metadata)
+  # ------------------------------------------------
+  mongo:
+    image: mongo:5.0 
+    container_name: graylog_mongo
+    networks:
+      - app-network
+    volumes:
+      - mongo_data_graylog:/data/db
+    restart: unless-stopped
+
+  # ------------------------------------------------
+  # Elasticsearch (stores log data)
+  # ------------------------------------------------
+  elasticsearch:
+    # Make sure this Elasticsearch version is compatible with Graylog 6.1.x
+    # (e.g. 7.17.x is recommended; 7.10.2 may or may not be fully compatible)
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: graylog_elasticsearch
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=127.0.0.1
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - action.auto_create_index=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - app-network
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ------------------------------------------------
+  # Graylog server (the web UI + processing)
+  # ------------------------------------------------
+  graylog:
+    build: ./graylog  # Builds from the custom Dockerfile
+    container_name: graylog
+    depends_on:
+      - mongo
+      - elasticsearch
+    networks:
+      - app-network
+    ports:
+      - "9001:9000"
+      - "12201:12201/udp"
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -f http://localhost:9000/ || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20 # 20 retries * 15s = 5 minutes
+    environment:
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9001/
+      - GRAYLOG_ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - GRAYLOG_MONGODB_URI=mongodb://mongo:27017/graylog
+      - GRAYLOG_ROOT_TIMEZONE=UTC
+      - GRAYLOG_WEB_ENDPOINT_URI=http://localhost:9001/api
+
+volumes:
+  mongo_data_graylog:
+  es_data:
+  graylog_data:
+
+networks:
+  app-network:
+    external: true # will be created if not found

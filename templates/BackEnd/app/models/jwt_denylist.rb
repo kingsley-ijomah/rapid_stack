@@ -1,0 +1,6 @@
+class JwtDenylist
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  field :jti, type: String
+  field :exp, type: Time
+end

@@ -1,0 +1,44 @@
+development:
+  clients:
+    default:
+      database: <%= VaultHelper.mongodb_credentials['database'] %>
+      hosts:
+        - <%= VaultHelper.mongodb_credentials['host'] %>
+      options:
+        user: <%= VaultHelper.mongodb_credentials['user'] %>
+        password: <%= VaultHelper.mongodb_credentials['password'] %>
+        auth_source: admin
+        retry_writes: true
+        server_selection_timeout: 5
+  options:
+    raise_not_found_error: false
+  driver_options:
+
+test:
+  clients:
+    default:
+      database: <%= ENV['MONGODB_DATABASE'] %>
+      hosts:
+        - <%= ENV['MONGODB_HOST'] %>
+      options:
+        read:
+          mode: :primary
+        max_pool_size: 1
+  options:
+    raise_not_found_error: false
+
+production:
+  clients:
+    default:
+      database: <%= VaultHelper.mongodb_credentials['database'] %>
+      hosts:
+        - <%= VaultHelper.mongodb_credentials['host'] %>
+      options:
+        user: <%= VaultHelper.mongodb_credentials['user'] %>
+        password: <%= VaultHelper.mongodb_credentials['password'] %>
+        auth_source: admin
+        replica_set: <%= ENV['MONGODB_REPLICA_SET'] %>
+        retry_writes: true
+  options:
+    raise_not_found_error: false
+  driver_options:

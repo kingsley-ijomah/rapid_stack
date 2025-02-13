@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# Add the lib directory to the load path
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "rapid_stack"
+
+RapidStack::CLI.start(ARGV)

@@ -1,0 +1,77 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    networks:
+      - app-network
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "mongodb-service"
+
+  backend:
+    build: 
+      context: ../BACKEND
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    environment:
+      - RAILS_ENV=development
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_TOKEN=${VAULT_TOKEN}
+    volumes:
+      - ../BACKEND:/rails
+    command: >
+      bash -c "rm -f /rails/tmp/pids/server.pid &&
+               ./bin/rails server -b 0.0.0.0"
+    depends_on:
+      mongodb:
+        condition: service_started
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "backend-service"
+
+  frontend:
+    build: 
+      context: ../FRONTEND
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "8100:8100"
+    volumes:
+      - ../FRONTEND:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - HOST=0.0.0.0
+      - PUBLIC_URL=http://localhost:8100
+    command: npm run start -- --host=0.0.0.0 --port=8100 --disable-host-check
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://127.0.0.1:12201"
+        tag: "frontend-service"
+
+volumes:
+  mongodb_data:
+
+networks:
+  app-network:
+    external: true

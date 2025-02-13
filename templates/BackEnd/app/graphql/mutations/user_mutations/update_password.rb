@@ -1,0 +1,24 @@
+# frozen_string_literal: true
+
+module Mutations
+  module UserMutations
+    # Update user password mutation
+    class UpdatePassword < Mutations::BaseMutation
+      # Define the input arguments for the mutation
+      argument :password, String, required: true
+      argument :new_password, String, required: true
+      argument :confirm_new_password, String, required: true
+
+      return_type Types::UserType
+      require_permission :ensure_all_groups
+
+      before_action :check_permission
+
+      def resolve(password:, new_password:, confirm_new_password:)
+        super
+        user = context[:current_user]
+        AuthService.new.password_update(user, password, new_password, confirm_new_password)
+      end
+    end
+  end
+end

@@ -1,0 +1,76 @@
+// For information on how to create your own theme, please see:
+// http://ionicframework.com/docs/theming/
+
+// Theme variables for Dog Walker app
+// Neutral palette with creative names
+
+// Light shades
+$mist-100: #ffffff;
+$mist-200: #f5f5f5;
+$mist-300: #ebebeb;
+
+// Medium shades
+$stone-400: #d4d4d4;
+$stone-500: #b8b8b8;
+$stone-600: #999999;
+
+// Dark shades
+$charcoal-700: #666666;
+$charcoal-800: #333333;
+$charcoal-900: #1a1a1a;
+
+:root {
+  // Primary colors
+  --ion-color-primary: #{$stone-600};
+  --ion-color-primary-rgb: #{red($stone-600)}, #{green($stone-600)}, #{blue($stone-600)};
+  --ion-color-primary-contrast: #{$mist-100};
+  --ion-color-primary-contrast-rgb: #{red($mist-100)}, #{green($mist-100)}, #{blue($mist-100)};
+  --ion-color-primary-shade: #{$charcoal-700};
+  --ion-color-primary-tint: #{$stone-500};
+
+  // Secondary colors
+  --ion-color-secondary: #{$charcoal-800};
+  --ion-color-secondary-rgb: #{red($charcoal-800)}, #{green($charcoal-800)}, #{blue($charcoal-800)};
+  --ion-color-secondary-contrast: #{$mist-100};
+  --ion-color-secondary-contrast-rgb: #{red($mist-100)}, #{green($mist-100)}, #{blue($mist-100)};
+  --ion-color-secondary-shade: #{$charcoal-900};
+  --ion-color-secondary-tint: #{$charcoal-700};
+
+  // Background colors
+  --ion-background-color: #{$mist-100};
+  --ion-background-color-rgb: #{red($mist-100)}, #{green($mist-100)}, #{blue($mist-100)};
+  --ion-item-background: #{$mist-200};
+
+  // Text colors
+  --ion-text-color: #{$charcoal-800};
+  --ion-text-color-rgb: #{red($charcoal-800)}, #{green($charcoal-800)}, #{blue($charcoal-800)};
+  --ion-text-color-step-100: #{$charcoal-700};
+  --ion-text-color-step-200: #{$stone-600};
+  --ion-text-color-step-300: #{$stone-500};
+
+  // Border colors
+  --ion-border-color: #{$stone-400};
+
+  // Custom component variables
+  --app-heading-color: #{$charcoal-900};
+  --app-subheading-color: #{$charcoal-700};
+  --app-disabled-color: #{$stone-500};
+  --app-hover-background: #{$mist-200};
+}
+
+// Dark theme (optional, can be expanded later)
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ion-background-color: #{$charcoal-900};
+    --ion-background-color-rgb: #{red($charcoal-900)}, #{green($charcoal-900)}, #{blue($charcoal-900)};
+    --ion-text-color: #{$mist-200};
+    --ion-text-color-rgb: #{red($mist-200)}, #{green($mist-200)}, #{blue($mist-200)};
+    --ion-border-color: #{$charcoal-700};
+    --ion-item-background: #{$charcoal-800};
+    
+    --app-heading-color: #{$mist-100};
+    --app-subheading-color: #{$mist-200};
+    --app-disabled-color: #{$charcoal-700};
+    --app-hover-background: #{$charcoal-800};
+  }
+}

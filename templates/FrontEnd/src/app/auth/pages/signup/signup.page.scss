@@ -1,0 +1,126 @@
+.signup-container {
+  max-width: 450px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+
+  @media (min-width: 768px) {
+    margin-top: 4rem;
+    max-width: 500px;
+  }
+}
+
+.signup-form {
+  background: var(--ion-background-color);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .form-field {
+    margin-bottom: 1rem;
+    --background: var(--ion-background-color);
+    --border-color: var(--ion-border-color);
+    --border-radius: 12px;
+    --border-width: 1px;
+    --padding-start: 1.5rem;
+    --padding-end: 1.5rem;
+    --highlight-height: 0;
+    --border-style: solid;
+    --inner-border-width: 0;
+    min-height: 60px;
+
+    &.ion-invalid.ion-touched {
+      --border-color: var(--ion-color-danger);
+    }
+
+    ion-input {
+      --padding-start: 0;
+      --padding-top: 1rem;
+      --padding-bottom: 1rem;
+      --placeholder-color: var(--ion-color-medium);
+      --placeholder-opacity: 0.8;
+      font-size: 1.1rem;
+      
+      &::part(native) {
+        padding: 1rem 0;
+      }
+
+      &::part(placeholder) {
+        font-size: 1.1rem;
+      }
+    }
+
+    &.terms-checkbox {
+      --inner-padding-end: 0;
+      margin-top: 1.5rem;
+      min-height: 48px;
+      --border-width: 0;
+
+      ion-checkbox {
+        flex: 0 0 1.5rem;
+        margin-right: 0.5rem;
+        --size: 1.5rem;
+        --checkbox-background: var(--ion-background-color);
+        --checkbox-background-checked: var(--ion-color-primary);
+        --border-color: var(--ion-border-color);
+        --border-radius: 6px;
+        --border-width: 1px;
+      }
+
+      ion-label {
+        margin-left: 0.25rem;
+        color: var(--ion-color-medium);
+        font-size: 1rem;
+
+        a {
+          color: var(--ion-color-primary);
+          text-decoration: none;
+          font-weight: 500;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+
+  .error-message {
+    display: block;
+    color: var(--ion-color-danger);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 1.25rem 1.5rem;
+  }
+
+  .submit-button {
+    margin-top: 2.5rem;
+    --border-radius: 12px;
+    height: 56px;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &:disabled {
+      --background: var(--ion-color-medium);
+      opacity: 0.7;
+    }
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--ion-color-medium);
+    font-size: 1rem;
+
+    a {
+      color: var(--ion-color-primary);
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 0.5rem;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+} 

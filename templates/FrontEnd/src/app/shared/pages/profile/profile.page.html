@@ -1,0 +1,99 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Profile</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <!-- Owner Profile Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Owner Profile</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="ownerProfileForm" (ngSubmit)="updateOwnerProfile()">
+        <ion-item>
+          <ion-label position="floating">First Name</ion-label>
+          <ion-input formControlName="firstName" type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Last Name</ion-label>
+          <ion-input formControlName="lastName" type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input formControlName="email" type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Phone</ion-label>
+          <ion-input formControlName="phone" type="tel"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Address</ion-label>
+          <ion-textarea formControlName="address" rows="3"></ion-textarea>
+        </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="!ownerProfileForm.valid" class="ion-margin-top">
+          Update Owner Profile
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Dog Profile Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Dog Profile</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="dogProfileForm" (ngSubmit)="updateDogProfile()">
+        <ion-item>
+          <ion-label position="floating">Name</ion-label>
+          <ion-input formControlName="name" type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Breed</ion-label>
+          <ion-input formControlName="breed" type="text"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Age</ion-label>
+          <ion-input formControlName="age" type="number"></ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="!dogProfileForm.valid" class="ion-margin-top">
+          Update Dog Profile
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Password Change Section -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Change Password</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()">
+        <ion-item>
+          <ion-label position="floating">Current Password</ion-label>
+          <ion-input formControlName="currentPassword" type="password"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">New Password</ion-label>
+          <ion-input formControlName="newPassword" type="password"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Confirm New Password</ion-label>
+          <ion-input formControlName="confirmPassword" type="password"></ion-input>
+        </ion-item>
+        <ion-button expand="block" type="submit" [disabled]="!passwordForm.valid" class="ion-margin-top">
+          Update Password
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

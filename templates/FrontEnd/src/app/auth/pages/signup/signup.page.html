@@ -1,0 +1,110 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Sign Up</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="signup-container">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+      <ion-item class="form-field">
+        <ion-input
+          type="text"
+          formControlName="fullName"
+          placeholder="Full Name"
+          [class.ion-invalid]="isSubmitted && f['fullName'].errors"
+          [class.ion-touched]="isSubmitted && f['fullName'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['fullName'].errors">
+        {{ getErrorMessage('fullName') }}
+      </ion-text>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="email"
+          formControlName="email"
+          placeholder="Email"
+          [class.ion-invalid]="isSubmitted && f['email'].errors"
+          [class.ion-touched]="isSubmitted && f['email'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['email'].errors">
+        {{ getErrorMessage('email') }}
+      </ion-text>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="password"
+          formControlName="password"
+          placeholder="Password"
+          [class.ion-invalid]="isSubmitted && f['password'].errors"
+          [class.ion-touched]="isSubmitted && f['password'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['password'].errors">
+        {{ getErrorMessage('password') }}
+      </ion-text>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="password"
+          formControlName="passwordConfirmation"
+          placeholder="Confirm Password"
+          [class.ion-invalid]="isSubmitted && f['passwordConfirmation'].errors"
+          [class.ion-touched]="isSubmitted && f['passwordConfirmation'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['passwordConfirmation'].errors">
+        {{ getErrorMessage('passwordConfirmation') }}
+      </ion-text>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="tel"
+          formControlName="telephone"
+          placeholder="Phone Number"
+          [class.ion-invalid]="isSubmitted && f['telephone'].errors"
+          [class.ion-touched]="isSubmitted && f['telephone'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['telephone'].errors">
+        {{ getErrorMessage('telephone') }}
+      </ion-text>
+
+      <ion-item class="form-field terms-checkbox">
+        <ion-checkbox formControlName="acceptTerms" [class.ion-invalid]="isSubmitted && f['acceptTerms'].errors">
+        </ion-checkbox>
+        <ion-label>I accept the <a routerLink="/terms" data-testid="terms-link">Terms and Conditions</a></ion-label>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['acceptTerms'].errors">
+        Accept the terms to continue
+      </ion-text>
+
+      <!-- Backend Errors -->
+      <ion-item lines="none" *ngIf="backendErrors?.length" class="status-messages error-messages">
+        <ion-text color="danger">
+          <ng-container *ngFor="let error of backendErrors">
+            <p>{{ error }}</p>
+          </ng-container>
+        </ion-text>
+      </ion-item>
+
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        class="submit-button"
+        [disabled]="signupForm.invalid && isSubmitted"
+      >
+        Sign Up
+      </ion-button>
+
+      <div class="login-link">
+        Already have an account? <a routerLink="/login" data-testid="login-link">Login</a>
+      </div>
+    </form>
+  </div>
+</ion-content> 

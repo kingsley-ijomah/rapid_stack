@@ -1,0 +1,83 @@
+# This is the docker-compose file for the production environment
+
+services:
+  backend:
+    image: ${DOCKERHUB_USERNAME}/${APP_NAME}-backend:latest
+    networks:
+      - app-network
+    ports:
+      - "3000:3000"
+    environment:
+      - RAILS_ENV=production
+      - RAILS_LOG_TO_STDOUT=true
+      - RAILS_LOG_LEVEL=debug
+      # - MONGODB_REPLICA_SET=rs0
+      - VAULT_ADDR=http://vault:8200
+      - VAULT_TOKEN=${VAULT_TOKEN}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://46.101.64.203:12201"
+        tag: "backend-service"
+
+  mongodb:
+    image: mongo:7.0
+    networks:
+      - app-network
+    # command: ["--bind_ip_all", "--keyFile", "/data/keyfile"]
+    command: ["--bind_ip_all"]
+    volumes:
+      - mongo_data_prod:/data/db
+      - mongodb_keyfile:/data
+    # depends_on:
+      # mongo-init:
+      #   condition: service_completed_successfully
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    healthcheck:
+      test: mongosh -u mongouser -p mongopass --eval 'db.runCommand("ping").ok' --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://46.101.64.203:12201"
+        tag: "mongodb-service"
+
+  nginx:
+    image: ${DOCKERHUB_USERNAME}/${APP_NAME}-nginx:latest
+    environment:
+      - DOMAINS=${DOMAINS}
+      - APP_NAME=${APP_NAME}
+      - FRONTEND_BUCKET_NAME=${FRONTEND_BUCKET_NAME}
+      - SPACES_REGION=${SPACES_REGION}
+    networks:
+      - app-network
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    volumes:
+      - nginx_logs:/var/log/nginx
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://46.101.64.203:12201"
+        tag: "nginx-service"
+
+volumes:
+  mongo_data_prod:
+  mongodb_keyfile:
+  nginx_logs:
+
+networks:
+  app-network:
+    external: true

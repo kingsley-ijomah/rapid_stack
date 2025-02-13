@@ -1,0 +1,84 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/auth/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Reset Password</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="verify-otp-container">
+    <form class="verify-otp-form" [formGroup]="otpForm" (ngSubmit)="onSubmit()">
+      <div class="form-description">
+        <h2>Verify and Reset Password</h2>
+        <p>Enter the verification code sent to your email and set your new password.</p>
+      </div>
+
+      <div class="form-section">
+        <h3>Verification Code</h3>
+        <div class="otp-inputs">
+          <ion-item class="otp-field" *ngFor="let control of otpControls; let i = index">
+            <ion-input
+              #otpInput
+              type="text"
+              maxlength="1"
+              [formControlName]="'digit' + i"
+              (ionInput)="onOtpInput($event, i)"
+              (paste)="onPaste($event)"
+              inputmode="numeric"
+              pattern="[0-9]*">
+            </ion-input>
+          </ion-item>
+        </div>
+      </div>
+
+      <div class="form-section">
+          <ion-item>
+            <ion-label position="floating">New Password</ion-label>
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="newPassword">
+            </ion-input>
+            <ion-button slot="end" fill="clear" (click)="togglePasswordVisibility('password')">
+              <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <div class="error-message" *ngIf="otpForm.get('newPassword')?.touched && otpForm.get('newPassword')?.invalid">
+            {{ getPasswordError() }}
+          </div>
+
+        <ion-item>
+          <ion-label position="floating">Confirm Password</ion-label>
+          <ion-input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            formControlName="confirmNewPassword">
+          </ion-input>
+          <ion-button slot="end" fill="clear" (click)="togglePasswordVisibility('confirmNewPassword')">
+            <ion-icon [name]="showConfirmPassword ? 'eye-off' : 'eye'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        <div class="error-message" *ngIf="otpForm.get('confirmNewPassword')?.touched && otpForm.get('confirmNewPassword')?.errors?.['passwordMismatch']">
+          Passwords do not match
+        </div>
+      </div>
+
+      <!-- Backend Errors -->
+      <ion-item lines="none" *ngIf="backendErrors?.length" class="status-messages error-messages">
+        <ion-text color="danger">
+          <ng-container *ngFor="let error of backendErrors">
+            <p>{{ error }}</p>
+          </ng-container>
+        </ion-text>
+      </ion-item>
+
+      <ion-button 
+        expand="block" 
+        class="submit-button"
+        type="submit"
+        [disabled]="!otpForm.valid || isSubmitting">
+        Reset Password
+      </ion-button>
+    </form>
+  </div>
+</ion-content> 

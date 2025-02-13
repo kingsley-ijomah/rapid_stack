@@ -1,0 +1,106 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>
+      {{ appName }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!isAuthenticated" routerLink="/login" class="login-btn">
+        Login
+      </ion-button>
+      <ion-button *ngIf="isAuthenticated" (click)="logout()" class="login-btn">
+        Logout
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="desktop-container">
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1>Connect with Local {{ appName }}s</h1>
+        <p class="subtitle">Join our community to find walking buddies for your furry friend</p>
+        
+        <ion-button expand="block" size="large" class="register-btn" routerLink="/signup">
+          Get Started
+        </ion-button>
+      </div>
+      <div class="hero-image">
+        <img [src]="heroImagePath" alt="Happy dogs being walked in the park">
+      </div>
+    </div>
+
+    <div class="features-section">
+      <h2>Why Choose {{ appName }}?</h2>
+      
+      <div class="features-grid">
+        <ion-card class="feature-card">
+          <ion-icon name="people-outline"></ion-icon>
+          <h3>Join Local Groups</h3>
+          <p>Find and join dog walking groups in your area. Connect with fellow dog owners and create lasting friendships.</p>
+        </ion-card>
+
+        <ion-card class="feature-card">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <h3>Organize Walks</h3>
+          <p>Schedule and participate in group walks. Choose convenient times and locations that work for you and your pet.</p>
+        </ion-card>
+
+        <ion-card class="feature-card">
+          <ion-icon name="chatbubbles-outline"></ion-icon>
+          <h3>Community Chat</h3>
+          <p>Connect and communicate with other dog owners. Share experiences, tips, and arrange meetups easily.</p>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="desktop-container footer-content">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a routerLink="/about">About Us</a></li>
+            <li><a routerLink="/faq">FAQ</a></li>
+            <li><a routerLink="/contact">Contact</a></li>
+            <li><a routerLink="/support">Support</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Community</h4>
+          <ul>
+            <li><a routerLink="/guidelines">Guidelines</a></li>
+            <li><a routerLink="/safety">Safety Tips</a></li>
+            <li><a routerLink="/blog">Blog</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <ion-icon name="logo-facebook"></ion-icon>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <ion-icon name="logo-twitter"></ion-icon>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <ion-icon name="logo-instagram"></ion-icon>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; {{currentYear}} {{ appName }}. All rights reserved.</p>
+        <div class="legal-links">
+          <a routerLink="/privacy">Privacy Policy</a>
+          <span class="separator">|</span>
+          <a routerLink="/terms">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</ion-content>
