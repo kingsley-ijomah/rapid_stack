@@ -33,8 +33,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ steps.vault.outputs.docker_hub_username }}
-          password: ${{ steps.vault.outputs.docker_hub_password }}
+          username: ${{ steps.vault.outputs.dockerhub_username }}
+          password: ${{ steps.vault.outputs.dockerhub_password }}
 
       - name: Build and push nginx
         uses: docker/build-push-action@v5
@@ -42,8 +42,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ steps.vault.outputs.docker_hub_username }}/${{ steps.vault.outputs.app_name }}-nginx:latest
-            ${{ steps.vault.outputs.docker_hub_username }}/${{ steps.vault.outputs.app_name }}-nginx:${{ github.sha }}
+            ${{ steps.vault.outputs.dockerhub_username }}/${{ steps.vault.outputs.app_name }}-nginx:latest
+            ${{ steps.vault.outputs.dockerhub_username }}/${{ steps.vault.outputs.app_name }}-nginx:${{ github.sha }}
 
       - name: Trigger Deploy workflow in DevOps
         if: success() # only runs if previous steps succeeded
