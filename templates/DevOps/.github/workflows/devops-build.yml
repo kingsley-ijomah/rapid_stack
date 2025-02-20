@@ -9,76 +9,23 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest   
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Checkout private actions
-        uses: actions/checkout@v4
-        with:
-          repository: ${{ secrets.MY_GITHUB_USERNAME }}/actions-kit
-          ref: main
-          token: ${{ secrets.REPO_ACCESS_TOKEN }}
-          path: .github/actions
-
-      - name: Get Vault Secrets
-        id: vault
-        uses: ./.github/actions/.github/actions/vault-secrets
-        with:
-          vault_addr: "http://${{ secrets.DROPLET_IP }}:8200"
-          droplet_ip: ${{ secrets.DROPLET_IP }}
-          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Debug secrets
-        run: |
-          echo "Vault secrets:"
-          echo "  vault_addr: ${{ steps.vault.outputs.vault_addr }}"
-          echo "  droplet_ip: ${{ steps.vault.outputs.droplet_ip }}"
-          echo "  domains: ${{ steps.vault.outputs.domains }}"
-          echo "  docker_hub_username: ${{ steps.vault.outputs.docker_hub_username }}"
-          echo "  docker_hub_password: ${{ steps.vault.outputs.docker_hub_password }}"
-          echo "  app_name: ${{ steps.vault.outputs.app_name }}"
-          echo "  app_rails_master_key: ${{ steps.vault.outputs.app_rails_master_key }}"
-          echo "  frontend_bucket_name: ${{ steps.vault.outputs.frontend_bucket_name }}"
-          echo "  spaces_region: ${{ steps.vault.outputs.spaces_region }}"
-
-      - name: Process deployment script
-        run: |
-          envsubst < templates/deploy.sh.tpl > deploy.sh
+      - name: Deploy Vault
         env:
-          dockerhub_username: ${{ steps.vault.outputs.docker_hub_username }}
-          app_name: ${{ steps.vault.outputs.app_name }}
-          domains: ${{ steps.vault.outputs.domains }}
-          dockerhub_password: ${{ steps.vault.outputs.docker_hub_password }}
-          rails_master_key: ${{ steps.vault.outputs.app_rails_master_key }}
-          frontend_bucket_name: ${{ steps.vault.outputs.frontend_bucket_name }}
-          spaces_region: ${{ steps.vault.outputs.spaces_region }}
-          droplet_ip: ${{ steps.vault.outputs.droplet_ip }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DROPLET_IP: ${{ secrets.DROPLET_IP }}
+        run: |
+          chmod +x deploy-vault.sh
+          ./deploy-vault.sh
 
-      - name: Make script executable
-        run: chmod +x deploy.sh
-
-      - name: Copy files to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ steps.vault.outputs.droplet_ip }}
-          username: deployuser
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: |
-            docker-compose.prod.yml,
-            docker-compose.graylog.yml,
-            docker-compose.portainer.yml,
-            deploy.sh,
-            graylog/
-          target: "/home/deployuser"
-
-      - name: Deploy to Digital Ocean
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ steps.vault.outputs.droplet_ip }}
-          username: deployuser
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd /home/deployuser
-            ./deploy.sh
+      - name: Deploy Services
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DROPLET_IP: ${{ secrets.DROPLET_IP }}
+        run: |
+          chmod +x deploy-services.sh
+          ./deploy-services.sh

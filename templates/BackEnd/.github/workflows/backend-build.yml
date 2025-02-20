@@ -24,7 +24,7 @@ jobs:
       - name: Checkout private actions
         uses: actions/checkout@v4
         with:
-          repository: ${{ secrets.MY_GITHUB_USERNAME }}/actions-kit
+          repository: ${{ secrets.MY_GITHUB_USERNAME }}/${{ secrets.APP_NAME }}-actions
           ref: main
           token: ${{ secrets.REPO_ACCESS_TOKEN }}
           path: .github/actions
@@ -40,8 +40,8 @@ jobs:
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ steps.vault.outputs.docker_hub_username }}
-          password: ${{ steps.vault.outputs.docker_hub_password }}
+          username: ${{ steps.vault.outputs.dockerhub_username }}
+          password: ${{ steps.vault.outputs.dockerhub_password }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -50,8 +50,8 @@ jobs:
           target: production
           push: true
           tags: |
-            ${{ steps.vault.outputs.docker_hub_username }}/${{ steps.vault.outputs.app_name }}-backend:latest
-            ${{ steps.vault.outputs.docker_hub_username }}/${{ steps.vault.outputs.app_name }}-backend:${{ github.sha }}
+            ${{ steps.vault.outputs.dockerhub_username }}/${{ steps.vault.outputs.app_name }}-backend:latest
+            ${{ steps.vault.outputs.dockerhub_username }}/${{ steps.vault.outputs.app_name }}-backend:${{ github.sha }}
       
       - name: Trigger Deploy workflow in DevOps
         if: success() # only runs if previous steps succeeded
@@ -59,5 +59,5 @@ jobs:
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.REPO_ACCESS_TOKEN }}" \
-            https://api.github.com/repos/${{ secrets.MY_GITHUB_USERNAME }}/${{ steps.vault.outputs.devops_repo }}/dispatches \
+            https://api.github.com/repos/${{ secrets.MY_GITHUB_USERNAME }}/${{ steps.vault.outputs.app_name }}-devops/dispatches \
             -d '{"event_type": "backend-updated", "client_payload": {"customData": "value"}}'

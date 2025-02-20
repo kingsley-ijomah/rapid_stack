@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-provider "digitalocean" {
-  token = var.do_token
-}
-
 resource "digitalocean_loadbalancer" "app_lb" {
   name   = "${var.app_name}-lb"
   region = "${var.do_region}"

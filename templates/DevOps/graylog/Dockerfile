@@ -25,17 +25,16 @@ RUN chmod +x /usr/local/bin/merge-graylog-conf.sh && \
     chmod 644 /usr/share/graylog/config/custom_graylog.conf
 
 # Set environment variables
-ENV GRAYLOG_PASSWORD_SECRET="bfdf4b08e066e7132e0164f91115a8648ddf689f691872687b65ec48d1e4873a" \
-    GRAYLOG_ROOT_PASSWORD_SHA2="ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f" \
-    GRAYLOG_HTTP_EXTERNAL_URI="http://46.101.64.203:9001/" \
-    GRAYLOG_PREFLIGHT_COMPLETED="true" \
+ENV GRAYLOG_PREFLIGHT_COMPLETED="true" \
     GRAYLOG_ELASTICSEARCH_VERSION="7" \
+    GRAYLOG_ROOT_TIMEZONE="UTC" \
     GRAYLOG_ELASTICSEARCH_HOSTS="http://elasticsearch:9200" \
     GRAYLOG_INPUT_GELF_UDP_ENABLED="true" \
     GRAYLOG_INPUT_GELF_UDP_PORT="12201" \
     GRAYLOG_INPUT_GELF_UDP_BIND_ADDRESS="0.0.0.0" \
-    GRAYLOG_ROOT_USERNAME="admin" \
-    GRAYLOG_ROOT_PASSWORD="password123"
+    GRAYLOG_HTTP_EXTERNAL_URI="http://localhost:9001/" \
+    GRAYLOG_MONGODB_URI="mongodb://mongo:27017/graylog" \
+    GRAYLOG_WEB_ENDPOINT_URI="http://localhost:9001/api"
 # Switch back to graylog user
 USER graylog
 

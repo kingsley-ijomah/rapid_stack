@@ -2,10 +2,10 @@
 
 class UserMailer < ApplicationMailer
   begin
-    mailer_creds = VaultHelper.mailer_credentials
-    app_creds = VaultHelper.app_credentials
+    mailer_creds = ConfigHelper.mailer_credentials
+    app_creds = ConfigHelper.app_credentials
   rescue => e
-    Rails.logger.warn "Failed to load from Vault: #{e.message}. Using Rails credentials."
+    Rails.logger.warn "Failed to load from Env: #{e.message}. Using Rails credentials."
     mailer_creds = Rails.application.credentials.mailer
     app_creds = Rails.application.credentials.app
   end

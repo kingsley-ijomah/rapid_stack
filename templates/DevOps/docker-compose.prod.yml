@@ -1,6 +1,28 @@
 # This is the docker-compose file for the production environment
 
 services:
+  mongodb:
+    image: mongo:7.0
+    networks:
+      - app-network
+    command: ["--bind_ip_all"]
+    volumes:
+      - mongo_data_prod:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+    healthcheck:
+      test: mongosh -u ${MONGO_USERNAME} -p ${MONGO_PASSWORD} --authenticationDatabase admin --eval 'db.runCommand("ping").ok' --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://${DROPLET_IP}:12201"
+        tag: "mongodb-service"
   backend:
     image: ${DOCKERHUB_USERNAME}/${APP_NAME}-backend:latest
     networks:
@@ -11,45 +33,35 @@ services:
       - RAILS_ENV=production
       - RAILS_LOG_TO_STDOUT=true
       - RAILS_LOG_LEVEL=debug
-      # - MONGODB_REPLICA_SET=rs0
       - VAULT_ADDR=http://vault:8200
       - VAULT_TOKEN=${VAULT_TOKEN}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - POSTMARK_API_TOKEN=${POSTMARK_API_TOKEN}
+      - APP_NAME=${APP_NAME}
+      - APP_DOMAIN=${APP_DOMAIN}
+      - APP_SUPPORT_EMAIL=${APP_SUPPORT_EMAIL}
+      - MAILER_FROM_ADDRESS=${MAILER_FROM_ADDRESS}
+      - MAILER_FROM_NAME=${MAILER_FROM_NAME}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGODB_USER=${MONGODB_USER}
+      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
     depends_on:
       mongodb:
         condition: service_healthy
-    logging:
-      driver: "gelf"
-      options:
-        gelf-address: "udp://46.101.64.203:12201"
-        tag: "backend-service"
-
-  mongodb:
-    image: mongo:7.0
-    networks:
-      - app-network
-    # command: ["--bind_ip_all", "--keyFile", "/data/keyfile"]
-    command: ["--bind_ip_all"]
-    volumes:
-      - mongo_data_prod:/data/db
-      - mongodb_keyfile:/data
-    # depends_on:
-      # mongo-init:
-      #   condition: service_completed_successfully
-    environment:
-      - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     healthcheck:
-      test: mongosh -u mongouser -p mongopass --eval 'db.runCommand("ping").ok' --quiet
-      interval: 10s
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 3
       start_period: 40s
     logging:
       driver: "gelf"
       options:
-        gelf-address: "udp://46.101.64.203:12201"
-        tag: "mongodb-service"
+        gelf-address: "udp://${DROPLET_IP}:12201"
+        tag: "backend-service"
 
   nginx:
     image: ${DOCKERHUB_USERNAME}/${APP_NAME}-nginx:latest
@@ -63,19 +75,25 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     restart: unless-stopped
     volumes:
       - nginx_logs:/var/log/nginx
     logging:
       driver: "gelf"
       options:
-        gelf-address: "udp://46.101.64.203:12201"
+        gelf-address: "udp://${DROPLET_IP}:12201"
         tag: "nginx-service"
 
 volumes:
   mongo_data_prod:
-  mongodb_keyfile:
   nginx_logs:
 
 networks:

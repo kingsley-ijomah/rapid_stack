@@ -75,8 +75,8 @@ class GraphqlController < ApplicationController
     return nil if token.nil?
 
     begin
-      jwt_secret = VaultHelper.jwt_secret_key
-      JWT.decode(token, jwt_secret, true, algorithm: 'HS256').first
+      @jwt_secret ||= ConfigHelper.jwt_secret_key
+      JWT.decode(token, @jwt_secret, true, algorithm: 'HS256').first
     rescue JWT::DecodeError => e
       Rails.logger.error "JWT decode error: #{e.message}"
       nil
@@ -108,4 +108,5 @@ class GraphqlController < ApplicationController
     render json: { error: { message: e.message, backtrace: e.backtrace }, data: {} },
            status: :internal_server_error
   end
+
 end

@@ -5,4 +5,5 @@ Rails.application.routes.draw do
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
   end
   post "/graphql", to: "graphql#execute"
+  get "/health", to: "health#index"
 end

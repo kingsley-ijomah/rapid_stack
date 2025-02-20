@@ -8,17 +8,6 @@ variable "ssh_private_key_path" {
   type        = string
 }
 
-variable "docker_hub_username" {
-  description = "Docker Hub username"
-  type        = string
-}
-
-variable "docker_hub_password" {
-  description = "Docker Hub password"
-  type        = string
-  sensitive   = true
-}
-
 variable "repo_access_token" {
   description = "GitHub repository access token"
   type        = string
@@ -34,11 +23,6 @@ variable "spaces_secret_key" {
   description = "DigitalOcean Spaces secret key"
   type        = string
   sensitive   = true
-}
-
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
 }
 
 variable "bucket_details" {
@@ -61,12 +45,6 @@ variable "app_name" {
   type        = string
 }
 
-variable "rails_master_key" {
-  description = "Rails master key"
-  type        = string
-  sensitive   = true
-}
-
 variable "domains" {
   description = "List of domains for the application"
   type        = list(string)
@@ -77,7 +55,60 @@ variable "github_username" {
   type = string
 }
 
-variable "devops_repo" {
-  description = "GitHub repository name"
+variable "app_support_email" {
+  description = "Application support email"
+  type = string
+}
+
+variable "mailer_from_address" {
+  description = "Mailer from address"
+  type = string
+}
+
+variable "mailer_from_name" {
+  description = "Mailer from name"
+  type = string
+}
+
+variable "postmark_api_key" {
+  description = "Postmark API key"
+  type = string
+  sensitive = true
+}
+
+variable "dockerhub_username" {
+  description = "DockerHub username"
+  type = string
+}
+
+variable "dockerhub_password" {
+  description = "DockerHub password"
+  type = string
+  sensitive = true
+}
+
+variable "mongodb_host" {
+  description = "MongoDB host"
+  type = string
+}
+
+variable "mongodb_database" {
+  description = "MongoDB database"
+  type = string
+}
+
+variable "mongodb_user" {
+  description = "MongoDB user"
+  type = string
+}
+
+variable "mongodb_password" {
+  description = "MongoDB password"
+  type = string
+  sensitive = true
+}
+
+variable "app_domain" {
+  description = "Application domain"
   type = string
 }

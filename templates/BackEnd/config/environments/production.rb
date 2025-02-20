@@ -50,49 +50,9 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  begin
-    app_creds = VaultHelper.app_credentials
-    smtp_creds = VaultHelper.smtp_credentials
-
-    # Set host to be used by links generated in mailer templates.
-    config.action_mailer.default_url_options = {
-      host: app_creds['domain']
-    }
-
-    config.action_mailer.default_options = {
-      from: app_creds['support_email']
-    }
-
-    # SMTP settings for production
-    config.action_mailer.delivery_method = :smtp
-    config.action_mailer.smtp_settings = {
-      address: smtp_creds['address'],
-      port: smtp_creds['port'],
-      user_name: smtp_creds['user_name'],
-      password: smtp_creds['password'],
-      authentication: :plain,
-      enable_starttls_auto: true
-    }
-  rescue => e
-    Rails.logger.warn "Failed to load from Vault: #{e.message}. Using Rails credentials."
-    # Fallback to Rails credentials
-    config.action_mailer.default_url_options = {
-      host: Rails.application.credentials.dig(:app, :domain)
-    }
-
-    config.action_mailer.default_options = {
-      from: Rails.application.credentials.dig(:app, :support_email)
-    }
-
-    config.action_mailer.smtp_settings = {
-      address: Rails.application.credentials.dig(:smtp, :address),
-      port: Rails.application.credentials.dig(:smtp, :port),
-      user_name: Rails.application.credentials.dig(:smtp, :user_name),
-      password: Rails.application.credentials.dig(:smtp, :password),
-      authentication: :plain,
-      enable_starttls_auto: true
-    }
-  end
+  config.action_mailer.default_url_options = { host: ENV.fetch('APP_DOMAIN') }
+  config.action_mailer.default_options     = { from: ENV.fetch('APP_SUPPORT_EMAIL') }
+  config.action_mailer.delivery_method     = :postmark
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

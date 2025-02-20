@@ -80,45 +80,49 @@ EOF
     RAILS_MASTER_KEY=$(openssl rand -hex 16)
     echo "✅ Generated new Rails development key: $RAILS_MASTER_KEY"
 
-    # Prompt for app and SMTP settings
+    # Prompt for app settings
     read -p "App Name: " APP_NAME
     read -p "Domain: " DOMAIN
     read -p "Support Email: " SUPPORT_EMAIL
     read -p "Mailer From Address: " MAILER_FROM
     read -p "Mailer From Name: " MAILER_NAME
-    read -p "SMTP Address: " SMTP_ADDRESS
-    read -p "SMTP Port: " SMTP_PORT
-    read -p "SMTP Username: " SMTP_USER
-    read -s -p "SMTP Password: " SMTP_PASS
     echo ""
 
     echo "Generating secure keys..."
     JWT_SECRET=$(openssl rand -hex 64)
     SECRET_KEY_BASE=$(openssl rand -hex 64)
 
+    # Generate Graylog credentials
+    echo "Generating Graylog credentials..."
+    GRAYLOG_PASSWORD_SECRET=$(openssl rand -hex 48)  # 48 hex bytes = 96 characters
+    GRAYLOG_ROOT_PASSWORD=$(openssl rand -base64 12)  # Generate random password
+    GRAYLOG_ROOT_PASSWORD_SHA2=$(echo -n "$GRAYLOG_ROOT_PASSWORD" | sha256sum | cut -d' ' -f1)
+
     echo "Storing secrets in Vault..."
     docker exec -e VAULT_TOKEN="$ROOT_TOKEN" -e VAULT_ADDR="http://127.0.0.1:8200" "$VAULT_CONTAINER" vault kv put secret/config \
-        app/name="$APP_NAME" \
-        app/domain="$DOMAIN" \
-        app/support_email="$SUPPORT_EMAIL" \
-        mailer/from_address="$MAILER_FROM" \
-        mailer/from_name="$MAILER_NAME" \
-        mailer/support_address="$SUPPORT_EMAIL" \
-        smtp/address="$SMTP_ADDRESS" \
-        smtp/port="$SMTP_PORT" \
-        smtp/user_name="$SMTP_USER" \
-        smtp/password="$SMTP_PASS" \
+        app_name="$APP_NAME" \
+        app_domain="$DOMAIN" \
+        app_support_email="$SUPPORT_EMAIL" \
+        mailer_from_address="$MAILER_FROM" \
+        mailer_from_name="$MAILER_NAME" \
         jwt_secret_key="$JWT_SECRET" \
         secret_key_base="$SECRET_KEY_BASE" \
-        rails/master_key="$RAILS_MASTER_KEY" \
-        vault/token="$ROOT_TOKEN" \
-        rails/env="development" \
-        mongodb/host="mongodb:27017" \
-        mongodb/database="database_dev" \
-        mongodb/user="mongouser" \
-        mongodb/password="mongopass"
+        rails_master_key="$RAILS_MASTER_KEY" \
+        vault_token="$ROOT_TOKEN" \
+        rails_env="development" \
+        mongodb_host="mongodb:27017" \
+        mongodb_database="database_dev" \
+        mongodb_user="mongouser" \
+        mongodb_password="mongopass" \
+        graylog_password_secret="$GRAYLOG_PASSWORD_SECRET" \
+        graylog_root_password_sha2="$GRAYLOG_ROOT_PASSWORD_SHA2" \
+        graylog_root_password="$GRAYLOG_ROOT_PASSWORD" \
+        graylog_root_username="admin"
 
     echo "✅ Secrets stored successfully in Vault!"
+    echo "🔑 Graylog login credentials:"
+    echo "Username: admin"
+    echo "Password: $GRAYLOG_ROOT_PASSWORD"
 }
 
 # Function to read secrets from Vault (for use later, if needed)
@@ -128,12 +132,18 @@ read_vault_secrets() {
     VAULT_RESPONSE=$(docker exec -e VAULT_TOKEN="$ROOT_TOKEN" "$VAULT_CONTAINER" vault kv get -format=json secret/config)
     SECRETS=$(echo "$VAULT_RESPONSE" | jq -r '.data.data')
     
-    export MONGODB_HOST=$(echo "$SECRETS" | jq -r '."mongodb/host"')
-    export MONGODB_DATABASE=$(echo "$SECRETS" | jq -r '."mongodb/database"')
-    export MONGODB_USER=$(echo "$SECRETS" | jq -r '."mongodb/user"')
-    export MONGODB_PASSWORD=$(echo "$SECRETS" | jq -r '."mongodb/password"')
-    export RAILS_MASTER_KEY=$(echo "$SECRETS" | jq -r '."rails/development_key"')
+    export MONGODB_HOST=$(echo "$SECRETS" | jq -r '."mongodb_host"')
+    export MONGODB_DATABASE=$(echo "$SECRETS" | jq -r '."mongodb_database"')
+    export MONGODB_USER=$(echo "$SECRETS" | jq -r '."mongodb_user"')
+    export MONGODB_PASSWORD=$(echo "$SECRETS" | jq -r '."mongodb_password"')
+    export RAILS_MASTER_KEY=$(echo "$SECRETS" | jq -r '."rails_master_key"')
     export VAULT_TOKEN="$ROOT_TOKEN"
+    
+    # Export Graylog credentials
+    export GRAYLOG_PASSWORD_SECRET=$(echo "$SECRETS" | jq -r '."graylog_password_secret"')
+    export GRAYLOG_ROOT_PASSWORD_SHA2=$(echo "$SECRETS" | jq -r '."graylog_root_password_sha2"')
+    export GRAYLOG_ROOT_USERNAME=$(echo "$SECRETS" | jq -r '."graylog_root_username"')
+    export GRAYLOG_ROOT_PASSWORD=$(echo "$SECRETS" | jq -r '."graylog_root_password"')
     
     echo "✅ Secrets loaded from Vault"
 }
@@ -156,9 +166,9 @@ read_mongodb_init_credentials() {
     VAULT_RESPONSE=$(docker exec -e VAULT_TOKEN="$ROOT_TOKEN" "$VAULT_CONTAINER" vault kv get -format=json secret/config)
     SECRETS=$(echo "$VAULT_RESPONSE" | jq -r '.data.data')
     
-    export MONGO_INITDB_DATABASE=$(echo "$SECRETS" | jq -r '."mongodb/database"')
-    export MONGO_INITDB_ROOT_USERNAME=$(echo "$SECRETS" | jq -r '."mongodb/user"')
-    export MONGO_INITDB_ROOT_PASSWORD=$(echo "$SECRETS" | jq -r '."mongodb/password"')
+    export MONGO_INITDB_DATABASE=$(echo "$SECRETS" | jq -r '."mongodb_database"')
+    export MONGO_INITDB_ROOT_USERNAME=$(echo "$SECRETS" | jq -r '."mongodb_user"')
+    export MONGO_INITDB_ROOT_PASSWORD=$(echo "$SECRETS" | jq -r '."mongodb_password"')
     
     # Check if any values are empty
     if [ -z "$MONGO_INITDB_DATABASE" ] || [ -z "$MONGO_INITDB_ROOT_USERNAME" ] || [ -z "$MONGO_INITDB_ROOT_PASSWORD" ]; then
@@ -175,27 +185,28 @@ docker network create app-network 2>/dev/null || true
 
 # Start Vault and wait for it
 echo "🔒 Starting Vault..."
-docker-compose -f Vault/docker-compose.vault.yml up -d
+docker-compose -f devops/docker-compose.vault.yml up -d
 sleep 5
 setup_vault
 wait_for_healthy "vault" 12
 
 # Read MongoDB credentials and export Vault token
 read_mongodb_init_credentials
+read_vault_secrets
 export_variables
 
 echo "📝 Starting Graylog stack..."
-docker-compose -f DevOps/docker-compose.graylog.yml up -d
+docker-compose -f devops/docker-compose.graylog.yml up -d
 
 echo "🐳 Starting Portainer..."
-docker-compose -f DevOps/docker-compose.portainer.yml up -d
+docker-compose -f devops/docker-compose.portainer.yml up -d
 
 echo "🚀 Starting main application stack..."
-docker-compose -f DevOps/docker-compose.yml up -d
+docker-compose -f devops/docker-compose.yml up -d
 
 # ----- Rails Credentials Initialization Block -----
 echo "Initializing Rails credentials..."
-docker-compose -f DevOps/docker-compose.yml run --rm \
+docker-compose -f devops/docker-compose.yml run --rm \
   backend bash -c "cd /rails && \
     mkdir -p config/credentials && \
     rm -f config/credentials/development.* && \
@@ -212,9 +223,9 @@ echo "
 🌐 Frontend:   http://localhost:8100
 
 To view logs:
-  All logs:     docker-compose -f DevOps/docker-compose.yml logs -f
-  Backend:      docker-compose -f DevOps/docker-compose.yml logs -f backend
-  Frontend:     docker-compose -f DevOps/docker-compose.yml logs -f frontend
+  All logs:     docker-compose -f devops/docker-compose.yml logs -f
+  Backend:      docker-compose -f devops/docker-compose.yml logs -f backend
+  Frontend:     docker-compose -f devops/docker-compose.yml logs -f frontend
 
 To stop everything:
   ./dev-stop.sh

@@ -1,12 +1,12 @@
 development:
   clients:
     default:
-      database: <%= VaultHelper.mongodb_credentials['database'] %>
+      database: <%= ENV['MONGODB_DATABASE'] %>
       hosts:
-        - <%= VaultHelper.mongodb_credentials['host'] %>
+        - <%= ENV['MONGODB_HOST'] %>
       options:
-        user: <%= VaultHelper.mongodb_credentials['user'] %>
-        password: <%= VaultHelper.mongodb_credentials['password'] %>
+        user: <%= ENV['MONGODB_USER'] %>
+        password: <%= ENV['MONGODB_PASSWORD'] %>
         auth_source: admin
         retry_writes: true
         server_selection_timeout: 5
@@ -30,14 +30,13 @@ test:
 production:
   clients:
     default:
-      database: <%= VaultHelper.mongodb_credentials['database'] %>
+      database: <%= ENV['MONGODB_DATABASE'] %>
       hosts:
-        - <%= VaultHelper.mongodb_credentials['host'] %>
+        - <%= ENV['MONGODB_HOST'] %>
       options:
-        user: <%= VaultHelper.mongodb_credentials['user'] %>
-        password: <%= VaultHelper.mongodb_credentials['password'] %>
+        user: <%= ENV['MONGODB_USER'] %>
+        password: <%= ENV['MONGODB_PASSWORD'] %>
         auth_source: admin
-        replica_set: <%= ENV['MONGODB_REPLICA_SET'] %>
         retry_writes: true
   options:
     raise_not_found_error: false

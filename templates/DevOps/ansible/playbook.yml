@@ -1,6 +1,8 @@
 ---
 - hosts: swarm_managers
   become: yes
+  vars:
+    app_name: "{{ lookup('env', 'APP_NAME') | default(inventory_hostname_short) }}"
 
   tasks:
     - name: Update apt and install dependencies
@@ -127,7 +129,7 @@
 
     - name: Copy vault secrets file
       ansible.builtin.copy:
-        src: vault_secrets.vault
+        src: "{{ lookup('env', 'HOME') }}/.vault_secrets.vault"
         dest: /home/deployuser/.vault/vault_secrets.vault
         owner: deployuser
         group: deployuser

@@ -67,11 +67,11 @@ services:
       timeout: 5s
       retries: 20 # 20 retries * 15s = 5 minutes
     environment:
-      - GRAYLOG_HTTP_EXTERNAL_URI=http://localhost:9001/
       - GRAYLOG_ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-      - GRAYLOG_MONGODB_URI=mongodb://mongo:27017/graylog
-      - GRAYLOG_ROOT_TIMEZONE=UTC
-      - GRAYLOG_WEB_ENDPOINT_URI=http://localhost:9001/api
+      - GRAYLOG_ROOT_USERNAME=${GRAYLOG_ROOT_USERNAME}
+      - GRAYLOG_ROOT_PASSWORD=${GRAYLOG_ROOT_PASSWORD}
+      - GRAYLOG_PASSWORD_SECRET=${GRAYLOG_PASSWORD_SECRET}
+      - GRAYLOG_ROOT_PASSWORD_SHA2=${GRAYLOG_ROOT_PASSWORD_SHA2}
 
 volumes:
   mongo_data_graylog:

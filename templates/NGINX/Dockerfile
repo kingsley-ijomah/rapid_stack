@@ -1,7 +1,7 @@
 FROM nginx:alpine
 
-# Install gettext for envsubst
-RUN apk add --no-cache gettext jq
+# Install gettext for envsubst and curl for health checks
+RUN apk add --no-cache gettext jq curl
 
 # Copy nginx configuration template
 COPY nginx.conf /etc/nginx/conf.d/default.conf.template

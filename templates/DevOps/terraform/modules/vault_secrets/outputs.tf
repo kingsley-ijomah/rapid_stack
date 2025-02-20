@@ -3,8 +3,7 @@ output "secrets_file_path" {
   value       = abspath(local_file.vault_secrets.filename)
 }
 
-output "secrets_content" {
-  description = "Content of the Vault secrets file"
-  value       = local.secrets_content
-  sensitive   = true
+output "vault_secrets_path" {
+  description = "The path to the vault secrets file"
+  value       = local.full_vault_path
 } 

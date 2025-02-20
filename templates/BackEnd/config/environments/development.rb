@@ -39,8 +39,8 @@ Rails.application.configure do
     default_from = Rails.application.credentials.dig(:app, :support_email)
 
     # Try to get values from Vault if available
-    if defined?(VaultHelper)
-      app_creds = VaultHelper.app_credentials
+    if defined?(ConfigHelper)
+      app_creds = ConfigHelper.app_credentials
       default_host = app_creds['domain'] if app_creds['domain']
       default_from = app_creds['support_email'] if app_creds['support_email']
     end

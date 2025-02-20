@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-provider "digitalocean" {
-  token = var.do_token
-}
-
 resource "digitalocean_certificate" "cert" {
   name    = "${var.app_name}-cert"
   type    = "lets_encrypt"

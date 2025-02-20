@@ -54,6 +54,11 @@ RUN mkdir -p db log tmp public && \
     useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log tmp public
 
+# Install curl
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+
 USER rails:rails
 
 EXPOSE 3000

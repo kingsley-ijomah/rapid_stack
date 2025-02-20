@@ -1,8 +1,8 @@
 class ApplicationMailer < ActionMailer::Base
   begin
-    mailer_creds = VaultHelper.mailer_credentials
+    mailer_creds = ConfigHelper.mailer_credentials
   rescue => e
-    Rails.logger.warn "Failed to load from Vault: #{e.message}. Using Rails credentials."
+    Rails.logger.warn "Failed to load from Env: #{e.message}. Using Rails credentials."
     mailer_creds = Rails.application.credentials.mailer
   end
 

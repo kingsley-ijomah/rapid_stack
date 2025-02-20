@@ -22,10 +22,6 @@ inputs:
   ssh_private_key:
     description: 'SSH private key for server access'
     required: true
-  secret_path:
-    description: 'Path to secret in Vault'
-    required: true
-    default: 'secret/data/config'
 
 outputs:
 %{ for output in outputs ~}
@@ -48,35 +44,36 @@ runs:
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H $${{ inputs.droplet_ip }} >> ~/.ssh/known_hosts
 
-        # Get vault token and data using vault CLI
+        # Get vault data using the vault CLI on the remote server via SSH.
         VAULT_DATA=$(ssh -i ~/.ssh/id_rsa deployuser@$${{ inputs.droplet_ip }} '
-          ROOT_TOKEN=$(grep "Initial Root Token:" /home/deployuser/.vault/vault_credentials.txt | cut -d" " -f4)
+          ROOT_TOKEN=$(jq -r .root_token < /home/deployuser/.vault/vault_credentials.txt)
           VAULT_CONTAINER=$(docker ps -q -f name=vault)
           docker exec $VAULT_CONTAINER sh -c "VAULT_TOKEN=$ROOT_TOKEN vault kv get -format=json secret/config" | jq -r ".data.data"
         ')
 
-        # Clean up SSH key
+        if echo "$VAULT_DATA" | jq -e '.' >/dev/null 2>&1; then
+          # Validate JSON format
+          echo "$VAULT_DATA" > /dev/null
+        else
+          echo "Error: Invalid JSON received" >&2
+          echo "$VAULT_DATA" >&2
+          exit 1
+        fi
+
+        # Clean up the SSH key
         rm -f ~/.ssh/id_rsa
 
-        # Export raw data for debugging
+        # Save the raw data for debugging
         echo "raw_vault_data<<EOF" >> "$GITHUB_OUTPUT"
         echo "$VAULT_DATA" >> "$GITHUB_OUTPUT"
         echo "EOF" >> "$GITHUB_OUTPUT"
 
-        # Export each key-value pair directly to GITHUB_OUTPUT
-        echo "$VAULT_DATA" | jq -r 'to_entries | .[] | .key + "=" + (.value | tostring)' | while read -r line; do
-          # If the value contains newlines or special characters, use the EOF syntax
-          if [[ "$line" == *$'\n'* ]] || [[ "$line" == *'"'* ]] || [[ "$line" == *'['* ]]; then
-            key="$${line%%=*}"
-            value="$${line#*=}"
-            echo "$${key}<<EOF" >> "$GITHUB_OUTPUT"
-            echo "$${value}" >> "$GITHUB_OUTPUT"
-            echo "EOF" >> "$GITHUB_OUTPUT"
-          else
-            echo "$line" >> "$GITHUB_OUTPUT"
-          fi
-          key=$(echo "$line" | cut -d'=' -f1)
-          echo "Exported: $key=***"
-        done
+        # Export each key-value pair from the JSON.
+        while IFS="=" read -r key value; do
+          # Trim quotes from the value if present
+          value=$(echo "$value" | tr -d '"')
+          echo "$key=$value" >> "$GITHUB_OUTPUT"
+        done < <(echo "$VAULT_DATA" | jq -r 'to_entries | .[] | "\(.key)=\(.value|tostring)"')
+
 
 

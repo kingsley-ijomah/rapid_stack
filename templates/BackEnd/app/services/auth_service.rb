@@ -7,7 +7,7 @@ class AuthService
   include SharedGraphqlMethods
 
   begin
-    @jwt_secret = VaultHelper.jwt_secret_key
+    @jwt_secret = ConfigHelper.jwt_secret_key
   rescue => e
     Rails.logger.warn "Failed to load JWT secret from Vault: #{e.message}. Using Rails credentials."
     @jwt_secret = Rails.application.credentials.jwt_secret_key

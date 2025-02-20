@@ -1,4 +1,5 @@
 require_relative "boot"
+require_relative "../lib/config_helper"
 
 require "rails"
 # Pick the frameworks you want:
