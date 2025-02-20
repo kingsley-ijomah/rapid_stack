@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rapid_stack"
+require "fileutils"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -11,5 +12,10 @@ RSpec.configure do |config|
 
   config.expect_with :rspec do |c|
     c.syntax = :expect
+  end
+
+  # Clean up any temporary files after each test
+  config.after(:each) do
+    FileUtils.rm_rf(Dir["tmp/[^.]*"])
   end
 end
