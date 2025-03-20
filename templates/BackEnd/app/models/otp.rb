@@ -1,7 +1,0 @@
-class Otp
-  include Mongoid::Document
-  include Mongoid::Timestamps
-  field :otp_code, type: String
-  field :expires_at, type: Time
-  belongs_to :user
-end

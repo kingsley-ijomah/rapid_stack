@@ -9,17 +9,17 @@ Gem::Specification.new do |spec|
   spec.email = ["kingsley@codehance.com"]
 
   spec.summary = "A comprehensive full-stack development toolkit that provides a containerized Rails API backend, Ionic Angular frontend, and complete DevOps infrastructure with Terraform and Ansible"
-  spec.description = "RapidStack is an all-in-one solution for modern web applications. It includes:
-    - Rails 8.0 API backend with GraphQL and MongoDB
-    - Ionic Angular frontend with authentication
-    - HashiCorp Vault integration for secrets management
-    - Complete DevOps setup with Terraform and Ansible
-    - Docker containerization for development and production
-    - CI/CD pipelines with GitHub Actions
-    - Monitoring with Graylog
-    - Container management with Portainer
-    - NGINX reverse proxy with SSL
-    - Automated deployment scripts"
+  spec.description = "Rapid Stack (RS) is a framework designed to streamline modern application development and deployment. " \
+    "It addresses the complexity of setting up infrastructure, backend, and frontend systems by providing a fully " \
+    "operational cloud-based stack that can be deployed in a single day.\n\n" \
+    "Key Features:\n" \
+    "• Automated Infrastructure: Leverages Terraform, Ansible, DigitalOcean droplets, and Docker for automated provisioning\n" \
+    "• Backend Stack: Rails 8.0 API with MongoDB and GraphQL integration\n" \
+    "• Frontend Framework: Ionic Angular with automated iOS/Android deployment\n" \
+    "• DevOps Tools: HashiCorp Vault for secrets, GitHub Actions CI/CD, Graylog monitoring\n" \
+    "• Production Ready: NGINX reverse proxy with SSL, Portainer container management\n\n" \
+    "Rapid Stack enables teams to focus on core feature development by eliminating repetitive boilerplate configurations " \
+    "while providing a comprehensive learning resource through well-structured, auto-generated code."
 
   spec.homepage = "https://github.com/CodehanceHQ/rapid_stack"
   spec.license = "MIT"
