@@ -60,7 +60,6 @@ Think of it as your development blueprint that ensures consistency, accelerates 
 - Node.js 20+
 - Docker and Docker Compose
 - Git
-- Yeoman (for using generators)
 
 ## Installation
 
@@ -69,33 +68,28 @@ Think of it as your development blueprint that ensures consistency, accelerates 
 gem install rapid_stack
 ```
 
-2. Install the Yeoman generators:
+2. Install the generators:
 ```bash
-rapid_stack install-generators
+rapid_stack_setup
 ```
 
-## Usage
 
-### Using the CLI
-
-1. Create a new project:
-```bash
-rapid_stack new my_app
-```
-
-### Using Yeoman Generators
+## Using Generators
 
 After installing the generators, you can use the following commands:
 
 ```bash
 # Generate a new RapidStack application
-yo rapid:app
+rapid init
 
 # Generate a new RapidStack API
-yo rapid:api
+rapid build:backend
 
 # Generate a new RapidStack frontend
-yo rapid:frontend
+rapid build:frontend
+
+# See all generators
+rapid
 ```
 
 ## Contributing
