@@ -1,0 +1,81 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/auth/forgot-password"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Verify OTP</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="verify-otp-container">
+    <form [formGroup]="verifyOtpForm" (ngSubmit)="onSubmit()" class="verify-otp-form">
+      <div class="form-description">
+        <h2>Reset Your Password</h2>
+        <p *ngIf="email">We've sent a verification code to <strong>{{ email }}</strong>. Enter the code and your new password below.</p>
+        <p *ngIf="!email">Enter the verification code sent to your email and your new password below.</p>
+      </div>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="text"
+          formControlName="otpCode"
+          placeholder="Verification Code"
+          [class.ion-invalid]="isSubmitted && f['otpCode'].errors"
+          [class.ion-touched]="isSubmitted && f['otpCode'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['otpCode'].errors">
+        {{ getErrorMessage('otpCode') }}
+      </ion-text>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="password"
+          formControlName="newPassword"
+          placeholder="New Password"
+          [class.ion-invalid]="isSubmitted && f['newPassword'].errors"
+          [class.ion-touched]="isSubmitted && f['newPassword'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['newPassword'].errors">
+        {{ getErrorMessage('newPassword') }}
+      </ion-text>
+
+      <ion-item class="form-field">
+        <ion-input
+          type="password"
+          formControlName="confirmNewPassword"
+          placeholder="Confirm New Password"
+          [class.ion-invalid]="isSubmitted && f['confirmNewPassword'].errors"
+          [class.ion-touched]="isSubmitted && f['confirmNewPassword'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['confirmNewPassword'].errors">
+        {{ getErrorMessage('confirmNewPassword') }}
+      </ion-text>
+
+      <!-- Backend Errors -->
+      <ion-item lines="none" *ngIf="backendErrors?.length" class="status-messages error-messages">
+        <ion-text color="danger">
+          <ng-container *ngFor="let error of backendErrors">
+            <p>{{ error }}</p>
+          </ng-container>
+        </ion-text>
+      </ion-item>
+
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        class="submit-button"
+        [disabled]="verifyOtpForm.invalid && isSubmitted"
+      >
+        Reset Password
+      </ion-button>
+
+      <div class="login-link">
+        Remember your password? <a routerLink="/auth/login" data-testid="login-link">Login</a>
+      </div>
+    </form>
+  </div>
+</ion-content> 

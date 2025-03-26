@@ -1,0 +1,108 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { BaseGraphQLPage } from 'src/app/shared/base/base-graphql.page';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonButton,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonText,
+  IonButtons,
+  IonBackButton,
+} from '@ionic/angular/standalone';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButton,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonText,
+    IonButtons,
+    IonBackButton
+  ]
+})
+export class LoginPage extends BaseGraphQLPage implements OnInit {
+  loginForm: FormGroup;
+  isSubmitted = false;
+  backendErrors: string[] = [];
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private authService: AuthService
+  ) {
+    super();
+    this.loginForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]]
+    });
+  }
+
+  ngOnInit() {}
+
+  // Getter for easy access to form fields in the template
+  get f() {
+    return this.loginForm.controls;
+  }
+
+  async onSubmit() {
+    this.isSubmitted = true;
+    this.backendErrors = [];
+
+    if (this.loginForm.valid) {
+      const loginData = this.loginForm.value;
+
+      this.authService.signIn(loginData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.loginForm.reset();
+          this.backendErrors = [];
+          this.navigateToDashboard();
+        },
+        error: () => {
+          this.backendErrors = this.errorService.errors;
+        }
+      });
+    }
+  }
+
+  // Helper method to get error message
+  getErrorMessage(control: string): string {
+    if (!this.isSubmitted) return '';
+
+    const formControl = this.f[control];
+    if (!formControl || !formControl.errors) return '';
+
+    if (formControl.errors['required']) return `${control} is required`;
+    if (formControl.errors['email']) return 'Please enter a valid email';
+
+    return '';
+  }
+  
+  // Navigate to dashboard after successful login
+  private navigateToDashboard() {
+    this.router.navigate(['/']);
+  }
+} 

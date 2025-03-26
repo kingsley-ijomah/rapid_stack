@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "lib/rapid_stack/version"
+require_relative "lib/rapid_stack/post_install"
 
 Gem::Specification.new do |spec|
   spec.name = "rapid_stack"
@@ -8,20 +9,18 @@ Gem::Specification.new do |spec|
   spec.authors = ["Kingsley Ijomah"]
   spec.email = ["kingsley@codehance.com"]
 
-  spec.summary = "A comprehensive full-stack development toolkit that provides a containerized Rails API backend, Ionic Angular frontend, and complete DevOps infrastructure with Terraform and Ansible"
-  spec.description = "Rapid Stack (RS) is a framework designed to streamline modern application development and deployment. " \
-    "It addresses the complexity of setting up infrastructure, backend, and frontend systems by providing a fully " \
-    "operational cloud-based stack that can be deployed in a single day.\n\n" \
+  spec.summary = "Rapid Stack transforms complex technical architecture into a simple, repeatable process using generators."
+  spec.description = "It's your entire technical stack, from cloud architecture to databases, from server-side services to client interfaces, all unified into one cohesive system.\n\n" \
+    "Think of it as your development blueprint that ensures consistency, accelerates learning, and eliminates the guesswork from building modern applications. " \
+    "Whether you're starting a new project or scaling an existing one, Rapid Stack gives you the confidence to build faster and smarter, with every component perfectly orchestrated." \
     "Key Features:\n" \
     "• Automated Infrastructure: Leverages Terraform, Ansible, DigitalOcean droplets, and Docker for automated provisioning\n" \
     "• Backend Stack: Rails 8.0 API with MongoDB and GraphQL integration\n" \
     "• Frontend Framework: Ionic Angular with automated iOS/Android deployment\n" \
     "• DevOps Tools: HashiCorp Vault for secrets, GitHub Actions CI/CD, Graylog monitoring\n" \
-    "• Production Ready: NGINX reverse proxy with SSL, Portainer container management\n\n" \
-    "Rapid Stack enables teams to focus on core feature development by eliminating repetitive boilerplate configurations " \
-    "while providing a comprehensive learning resource through well-structured, auto-generated code."
+    "• Production Ready: NGINX reverse proxy with SSL, Portainer container management\n\n"
 
-  spec.homepage = "https://github.com/CodehanceHQ/rapid_stack"
+  spec.homepage = "https://github.com/kingsley-ijomah/rapid_stack"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.1"
 
@@ -36,7 +35,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir[
     "lib/**/*",
     "templates/**/*",
-    "bin/*",
+    "bin/**/*",
     "LICENSE.txt",
     "README.md",
     "CHANGELOG.md"
@@ -47,8 +46,9 @@ Gem::Specification.new do |spec|
     }x)
   end
 
-  spec.bindir = "exe"
-  spec.executables = ["rapid_stack"]
+  spec.bindir = "bin"
+  spec.executables = %w[rapid_stack rapid_stack_setup]
+  spec.require_paths = ["lib"]
 
   # Runtime dependencies
   spec.add_dependency "jwt", "~> 2.7"
@@ -57,8 +57,23 @@ Gem::Specification.new do |spec|
   spec.add_dependency "vault", "~> 0.18.0"
 
   # Development dependencies
+  spec.add_development_dependency "npm", "~> 0.1.0" # For handling npm operations
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
+
+  # Post-install message
+  spec.post_install_message = <<~MSG
+    =======================================
+    Thank you for installing Rapid Stack!
+    =======================================
+
+    To complete the installation and set up the generators:
+
+    1. Run the following command:
+        rapid_stack_setup
+
+    For more information, visit: #{spec.homepage}
+  MSG
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

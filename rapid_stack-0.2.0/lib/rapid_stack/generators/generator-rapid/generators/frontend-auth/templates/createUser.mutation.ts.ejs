@@ -1,0 +1,31 @@
+import gql from 'graphql-tag';
+
+export const CreateUserMutation = gql`
+  mutation CreateUser(
+    <% args.filter(arg => arg.name !== 'encrypted_password').forEach(function(arg, index) { %>$<%= snakeToCamel(arg.name) %>: <%= arg.type %><%= arg.required ? '!' : '' %><%= index < args.length - 1 ? ',' : '' %>
+    <% }); %>
+  ) {
+    createUser(
+      input: {
+        <% args.filter(arg => arg.name !== 'encrypted_password').forEach(function(arg, index) { %><%= snakeToCamel(arg.name) %>: $<%= snakeToCamel(arg.name) %><%= index < args.length - 1 ? ',' : '' %>
+        <% }); %>
+      }
+    ) {
+      data {
+        <% responseFields.forEach(function(field) { %><%= field %>
+        <% }); %>
+      }
+      errors
+      message
+      httpStatus
+    }
+  }
+`;
+
+<% 
+function snakeToCamel(str) {
+  return str.replace(/_([a-z])/g, function(match, group1) {
+    return group1.toUpperCase();
+  });
+}
+%> 

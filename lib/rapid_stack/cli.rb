@@ -1,5 +1,6 @@
 require "thor"
 require "fileutils"
+require "pathname"
 
 module RapidStack
   class CLI < Thor
@@ -8,7 +9,55 @@ module RapidStack
       puts "Hello from RapidStack!"
     end
 
-    desc "new APP_NAME", "Create a new Rails application with RapidStack configuration"
+    desc "install-generators", "Install Yeoman generators globally"
+    def install_generators
+      puts "\n=== Starting Manual Generator Installation ==="
+
+      # Find the generator directory in the installed gem
+      gem_dir = Pathname.new(__dir__).parent.parent
+      puts "Looking for generator in: #{gem_dir}"
+
+      generator_dir = gem_dir.join("lib/rapid_stack/generators/generator-rapid")
+
+      unless generator_dir.exist?
+        say("Error: Generator directory not found at #{generator_dir}", :red)
+        return
+      end
+
+      begin
+        # Change to the generator directory
+        puts "\nChanging to generator directory: #{generator_dir}"
+        Dir.chdir(generator_dir) do
+          puts "Current directory: #{Dir.pwd}"
+
+          # Install npm dependencies
+          puts "\nInstalling npm dependencies..."
+          npm_result = system("npm install")
+          puts "npm install result: #{npm_result}"
+          raise "Failed to install npm dependencies" unless npm_result
+
+          # Link the generator globally
+          puts "\nLinking generator globally..."
+          link_result = system("npm link")
+          puts "npm link result: #{link_result}"
+          raise "Failed to link generator globally" unless link_result
+
+          say("\n=== Generator Installation Complete ===", :green)
+          say("\nYou can now use the generators with:", :green)
+          say("  rapid # To see the available generators", :green)
+          say("  rapid init     # Generate a new RapidStack application", :green)
+          say("  rapid schema:create     # Generate a new RapidStack schema", :green)
+          say("  rapid frontend:create # Generate a new RapidStack frontend", :green)
+        end
+      rescue StandardError => e
+        say("\n=== Generator Installation Failed ===", :red)
+        say("Error: #{e.message}", :red)
+        puts "Backtrace:"
+        puts e.backtrace
+      end
+    end
+
+    desc "new APP_NAME", "Create a new RapidStack application"
     def new(app_name)
       target_dir = File.expand_path(app_name, Dir.pwd)
 
@@ -19,41 +68,12 @@ module RapidStack
         return
       end
 
-      # Find the templates directory relative to the gem's root
-      template_dir = find_template_dir
-      unless Dir.exist?(template_dir)
-        say("Error: Template directory not found at #{template_dir}", :red)
-        say("Please ensure the templates directory exists in the gem.", :red)
-        return
-      end
-
-      say("Creating project directory: #{target_dir}", :green)
-      FileUtils.mkdir_p(target_dir)
-
-      say("Copying boilerplate files from: #{template_dir}", :green)
-      begin
-        # Copy template contents
-        FileUtils.cp_r(Dir.glob("#{template_dir}/*"), target_dir)
-        say("Project '#{app_name}' created successfully!", :green)
-      rescue StandardError => e
-        say("Error copying template files: #{e.message}", :red)
-        FileUtils.rm_rf(target_dir) # Cleanup on failure
-      end
-
-      # Display requirements after successful creation
-      display_requirements(app_name)
+      say("Creating new RapidStack application...", :green)
+      say("Please use the following command to generate your application:", :green)
+      say("  rapid init #{app_name}", :green)
     end
 
     private
-
-    def find_template_dir
-      possible_locations = [
-        File.expand_path("../../templates", __dir__), # When running as a gem
-        File.expand_path("templates", Dir.pwd) # When running locally
-      ]
-
-      possible_locations.find { |dir| Dir.exist?(dir) } || possible_locations.first
-    end
 
     def display_requirements(app_name)
       say("\nProject Requirements:", :green)
@@ -73,8 +93,6 @@ module RapidStack
       say("   bundle install")
       say("4. Navigate to your project:")
       say("   cd #{app_name}")
-      say("5. Start the development environment:")
-      say("   ./dev-start.sh")
       say("─" * 50)
     end
 

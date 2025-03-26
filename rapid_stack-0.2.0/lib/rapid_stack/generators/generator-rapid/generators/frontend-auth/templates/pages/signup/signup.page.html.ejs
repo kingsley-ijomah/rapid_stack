@@ -1,0 +1,120 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Sign Up</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="signup-container">
+    <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="signup-form">
+<% 
+// First, separate fields into regular inputs and checkboxes
+const regularFields = [];
+const checkboxFields = [];
+
+// Filter out encrypted_password and role fields, then separate remaining fields
+args.filter(arg => arg.name !== 'encrypted_password' && arg.name !== 'role').forEach(function(arg) {
+  const fieldName = snakeToCamel(arg.name);
+  // Identify checkbox fields by type or naming convention
+  if (arg.type === 'Boolean' || fieldName.includes('accept') || fieldName.includes('agree') || fieldName.includes('consent')) {
+    checkboxFields.push(arg);
+  } else {
+    regularFields.push(arg);
+  }
+});
+
+// Render regular input fields first
+regularFields.forEach(function(arg) { 
+  const fieldName = snakeToCamel(arg.name);
+  let inputType = 'text';
+  if (fieldName.includes('password')) {
+    inputType = 'password';
+  } else if (fieldName === 'email') {
+    inputType = 'email';
+  } else if (fieldName === 'telephone') {
+    inputType = 'tel';
+  }
+%>
+      <ion-item class="form-field">
+        <ion-input
+          type="<%= inputType %>"
+          formControlName="<%= fieldName %>"
+          placeholder="<%= formatFieldName(fieldName) %>"
+          [class.ion-invalid]="isSubmitted && f['<%= fieldName %>'].errors"
+          [class.ion-touched]="isSubmitted && f['<%= fieldName %>'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['<%= fieldName %>'].errors">
+        {{ getErrorMessage('<%= fieldName %>') }}
+      </ion-text>
+<% }); %>
+
+<% 
+// Then render checkbox fields
+checkboxFields.forEach(function(arg) { 
+  const fieldName = snakeToCamel(arg.name);
+  const label = formatFieldName(fieldName);
+  // Determine if this is a terms acceptance checkbox
+  const isTerms = fieldName.includes('term') || fieldName.includes('condition');
+%>
+      <ion-item class="form-field terms-checkbox">
+        <ion-checkbox formControlName="<%= fieldName %>" [class.ion-invalid]="isSubmitted && f['<%= fieldName %>'].errors">
+        </ion-checkbox>
+        <ion-label>
+<% if (isTerms) { %>
+          I accept the <a routerLink="/terms" data-testid="terms-link">Terms and Conditions</a>
+<% } else { %>
+          <%= label %>
+<% } %>
+        </ion-label>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['<%= fieldName %>'].errors">
+<% if (isTerms) { %>
+        Accept the terms to continue
+<% } else { %>
+        {{ getErrorMessage('<%= fieldName %>') }}
+<% } %>
+      </ion-text>
+<% }); %>
+
+      <!-- Backend Errors -->
+      <ion-item lines="none" *ngIf="backendErrors?.length" class="status-messages error-messages">
+        <ion-text color="danger">
+          <ng-container *ngFor="let error of backendErrors">
+            <p>{{ error }}</p>
+          </ng-container>
+        </ion-text>
+      </ion-item>
+
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        class="submit-button"
+        [disabled]="signupForm.invalid && isSubmitted"
+      >
+        Sign Up
+      </ion-button>
+
+      <div class="login-link">
+        Already have an account? <a routerLink="/auth/login" data-testid="login-link">Login</a>
+      </div>
+    </form>
+  </div>
+</ion-content>
+
+<% 
+function snakeToCamel(str) {
+  return str.replace(/_([a-z])/g, function(match, group1) {
+    return group1.toUpperCase();
+  });
+}
+
+function formatFieldName(camelCase) {
+  return camelCase
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, function(str) { return str.toUpperCase(); });
+}
+%> 

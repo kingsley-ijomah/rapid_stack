@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require "rapid_stack"
+
+puts "\n=== Rapid Stack CLI Starting ==="
+puts "Current directory: #{Dir.pwd}"
+puts "Executable path: #{__FILE__}"
+
+RapidStack::CLI.start(ARGV)

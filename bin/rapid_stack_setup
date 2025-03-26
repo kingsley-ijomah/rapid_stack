@@ -1,0 +1,47 @@
+#!/usr/bin/env ruby
+
+require "rapid_stack"
+require "rapid_stack/post_install"
+require "fileutils"
+
+def print_header
+  puts "\n============================================"
+  puts "       Rapid Stack Generator Setup"
+  puts "============================================\n\n"
+end
+
+def print_success
+  puts "\n============================================"
+  puts "          Setup Complete!"
+  puts "============================================"
+  puts "\nYou can now use the following commands:"
+  puts "  rapid         # To see available generators"
+  puts "  rapid init    # Generate a new RapidStack application"
+  puts "  rapid schema:create    # Generate a new RapidStack schema"
+  puts "  rapid frontend:create  # Generate a new RapidStack frontend"
+  puts "\nFor more information, visit: https://github.com/kingsley-ijomah/rapid_stack"
+  puts "============================================\n\n"
+end
+
+def print_error(error)
+  puts "\n============================================"
+  puts "          Setup Failed"
+  puts "============================================"
+  puts "\nError: #{error.message}"
+  puts "\nFor help, please:"
+  puts "1. Check that npm is installed and in your PATH"
+  puts "2. Try running 'rapid_stack_setup' again"
+  puts "3. Report the issue if it persists:"
+  puts "   https://github.com/kingsley-ijomah/rapid_stack/issues"
+  puts "============================================\n\n"
+end
+
+begin
+  print_header
+  puts "Installing Rapid Stack generators..."
+  RapidStack::PostInstall.install_generators
+  print_success
+rescue StandardError => e
+  print_error(e)
+  exit 1
+end

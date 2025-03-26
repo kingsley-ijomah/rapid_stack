@@ -1,0 +1,17 @@
+import { gql } from 'apollo-angular';
+
+export const Show<%= h.toPascalCase(modelName) %>Query = gql`
+  query show<%= h.toPascalCase(modelName) %>($input: Show<%= h.toPascalCase(modelName) %>Input!) {
+    show<%= h.toPascalCase(modelName) %>(input: $input) {
+      data {
+        id
+        <%= fields.map(field => `${h.toCamelCase(field.name)}`).join('\n        ') %>
+        createdAt
+        updatedAt
+      }
+      errors
+      message
+      httpStatus
+    }
+  }
+`; 

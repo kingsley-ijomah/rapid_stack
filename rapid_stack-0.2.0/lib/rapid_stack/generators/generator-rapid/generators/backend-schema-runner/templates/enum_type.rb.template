@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+module Types
+  # Enum type for <%= modelName %> <%= enumField.name %> field
+  class <%= modelName %><%= enumField.name.charAt(0).toUpperCase() + enumField.name.slice(1) %>EnumType < Types::BaseEnum
+<% enumField.enum_values.forEach(function(value) { -%>
+    value '<%= value.toUpperCase() %>', '<%= modelName %> is <%= value %>', value: '<%= value %>'
+<% }); -%>
+  end
+end 

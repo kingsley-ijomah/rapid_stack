@@ -1,0 +1,519 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Apollo } from 'apollo-angular';
+import { addIcons } from 'ionicons';
+import { refreshOutline, searchOutline } from 'ionicons/icons';
+import { List<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>Query } from 'src/app/graphql/queries/<%= modelName.toLowerCase() %>/list<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>.query';
+import { List<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>sQuery } from 'src/app/graphql/queries/<%= actionTargetModel.toLowerCase() %>/list<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>s.query';
+import { Create<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Mutation } from 'src/app/graphql/mutations/<%= actionTargetModel.toLowerCase() %>/create<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>.mutation';
+<%# 
+Track imported queries to prevent duplicates 
+-%><%
+const importedQueries = new Set([`List${h.capitalize(modelName)}${h.pluralize(modelName).slice(modelName.length)}Query`]);
+targetModelRelationships.forEach(function(relationship) { 
+  if (!relationship.useCurrentUser) {
+    const queryName = `List${h.capitalize(h.pluralize(relationship.name))}Query`;
+    if (!importedQueries.has(queryName)) {
+      importedQueries.add(queryName); -%>
+import { <%= queryName %> } from 'src/app/graphql/queries/<%= relationship.name.toLowerCase() %>/list<%= h.capitalize(h.pluralize(relationship.name)) %>.query';<% } 
+  }
+}); -%>
+import { BaseGraphQLPage } from 'src/app/shared/base/base-graphql.page';
+import { AuthService } from 'src/app/services/auth/auth.service';
+
+interface TableItem {<% selectedFields.forEach(function(field, index) { %>
+  <%= h.toCamelCase(field) %>?: <%= field.includes('_at') ? 'Date | string' : field.includes('count') || field.includes('id') ? 'number' : 'string' %> | null;<% }); %>
+  id: string;
+  [key: string]: string | number | Date | null | undefined;
+}
+
+interface ActionItem {
+  id: string;
+  <%= h.toCamelCase(modelName) %>Id: string;
+  [key: string]: any;
+}
+
+interface PaginationOptions {
+  totalPages: number;
+  totalCount: number;
+  currentPage: number;
+  perPage: number;
+  prevPage: number | null;
+  nextPage: number | null;
+}
+
+interface ListResponse {
+  data: TableItem[];
+  message: string;
+  errors: string[];
+  httpStatus: number;
+  options: PaginationOptions;
+}
+
+interface <%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>ListResponse {
+  data: ActionItem[];
+  message: string;
+  errors: string[];
+  httpStatus: number;
+  options: PaginationOptions;
+}
+
+@Component({
+  selector: 'app-<%= page %>',
+  templateUrl: './<%= page %>.page.html',
+  styleUrls: ['./<%= page %>.page.scss'],
+  standalone: true,
+  imports: [IonicModule, CommonModule, FormsModule],
+  styles: [`
+    .action-badge {
+      margin-right: 8px;
+      padding: 4px 8px;
+      border-radius: 12px;
+    }
+
+    ion-button[disabled] {
+      opacity: 0.7;
+    }
+  `]
+})
+export class <%= h.capitalize(page) %>Page extends BaseGraphQLPage implements OnInit {
+  // Data properties
+  items: TableItem[] = [];
+  loading = false;
+  error: any = null;
+  
+  // Pagination properties
+  pagination = {
+    currentPage: 1,
+    perPage: 10,
+    totalPages: 0,
+    totalCount: 0
+  };
+  
+  // Filter properties
+  searchTerm = '';
+  filters: Record<string, any> = {};
+
+  selectedFields: string[] = <%- JSON.stringify(selectedFields) %>;
+  buttonName: string = '<%= buttonName %>';
+  actionTargetModel: string = '<%= actionTargetModel %>';
+  targetModelFields: any[] = <%- JSON.stringify(targetModelFields) %>;
+  targetModelRelationships: any[] = <%- JSON.stringify(targetModelRelationships) %>;
+  
+  isModalOpen = false;
+  formData: any = {};
+  relationshipItems: { [key: string]: any[] } = {};
+
+  // Add missing properties
+  itemsPerPage = 10;
+  orderDirection = 'desc';
+  totalItems = 0;
+
+  // Track which items have actions
+  itemActions: { [key: string]: boolean } = {};
+  currentUserId: string | null = null;
+
+  // Add helper methods for template
+  h = {
+    capitalize: (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+  };
+
+  constructor(
+    private apollo: Apollo,
+    private authService: AuthService,
+    private toastController: ToastController
+  ) {
+    super();
+    addIcons({
+      refreshOutline,
+      searchOutline
+    });
+  }
+
+  async ngOnInit() {
+    // Get current user ID first
+    const currentUser = await this.authService.getCurrentUser().toPromise();
+    this.currentUserId = currentUser?.id || null;
+    
+    await this.loadData();
+    await this.initializeFormData();
+  }
+
+  private async initializeFormData() {
+    // Initialize form data with empty values for each field
+    this.targetModelFields.forEach(field => {
+      this.formData[field.name] = field.type === 'Boolean' ? false : '';
+    });
+    
+    // Handle relationships - set current user ID for user fields that use current user
+    for (const field of this.targetModelRelationships) {
+      const fieldName = `${field.name}Id`; // Append 'Id' to relationship field names
+      if (field.useCurrentUser) {
+        const currentUser = await this.authService.getCurrentUser().toPromise();
+        this.formData[fieldName] = currentUser?.id || null;
+      } else {
+        this.formData[fieldName] = null;
+      }
+    }
+  }
+
+  async loadData() {
+    try {
+      const result = await this.apollo
+        .watchQuery({
+          query: List<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>Query,
+          variables: {
+            page: this.pagination.currentPage,
+            perPage: this.itemsPerPage,
+            orderDirection: this.orderDirection,
+            filters: this.filters
+          }
+        })
+        .valueChanges.subscribe(async ({ data }: any) => {
+          this.items = data.list<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>.data;
+          this.totalItems = data.list<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>.options.totalCount;
+          this.pagination.totalPages = data.list<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>.options.totalPages;
+          this.pagination.currentPage = data.list<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>.options.currentPage;
+          
+          // After loading items, check for existing actions
+          await this.checkExistingActions();
+        });
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  }
+
+  async checkExistingActions() {
+    if (!this.currentUserId || this.items.length === 0) return;
+
+    try {
+      const result = await this.apollo
+        .query<{ ['list<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>s']: <%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>ListResponse }>({
+          query: List<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>sQuery,
+          variables: {
+            filters: {
+              userId: this.currentUserId,
+              <%= h.toCamelCase(modelName) %>IdIn: this.items.map(item => item['id'])
+            }
+          }
+        })
+        .toPromise();
+
+      // Reset the actions map
+      this.itemActions = {};
+      
+      // Mark items that have actions
+      const actions = result?.data?.['list<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>s']?.data || [];
+      actions.forEach((action: ActionItem) => {
+        this.itemActions[action.<%= h.toCamelCase(modelName) %>Id] = true;
+      });
+    } catch (error) {
+      console.error('Error checking existing actions:', error);
+    }
+  }
+
+  hasExistingAction(itemId: string): boolean {
+    return Boolean(this.itemActions[itemId]);
+  }
+
+  handleAction(item: TableItem) {
+    // Set the ID field in formData based on the model name
+    this.formData['<%= h.toCamelCase(modelName) %>Id'] = item['id'];
+    
+    this.setOpen(true);
+    this.loadRelationshipItems();
+  }
+
+  setOpen(isOpen: boolean) {
+    this.isModalOpen = isOpen;
+    if (!isOpen) {
+      this.initializeFormData();
+      this.relationshipItems = {};
+    }
+  }
+
+  async loadRelationshipItems() {
+    for (const field of this.targetModelRelationships) {
+      // Skip loading items for relationships using current user
+      if (field.useCurrentUser) {
+        continue;
+      }
+
+      try {
+        let query;
+        let responsePath;
+        switch(field.name) {
+          <%_ targetModelRelationships.forEach(function(r) { 
+            if (!r.useCurrentUser) { _%>
+          case '<%= r.name %>':
+            query = List<%= h.capitalize(h.pluralize(r.name)) %>Query;
+            responsePath = 'list<%= h.capitalize(h.pluralize(r.name)) %>';
+            break;
+          <%_ }
+          }); _%>
+          default:
+            console.error(`Unknown relationship type: ${field.name}`);
+            continue;
+        }
+
+        await this.executeQuery<any>({
+          query,
+          variables: {
+            page: 1,
+            perPage: 100
+          },
+          responsePath,
+          onSuccess: (response) => {
+            const items = response.data || [];
+            this.relationshipItems[field.name] = items.map((item: any) => {
+              // Get the display values for each selected field
+              const displayValues = field.displayFields.map((displayField: string) => {
+                const value = item[displayField];
+                // Format the value if it's a date or special field
+                if (displayField.includes('_at') || displayField.includes('date')) {
+                  return new Date(value).toLocaleDateString();
+                }
+                if (displayField.includes('status') || displayField.includes('type') || displayField.includes('category')) {
+                  return value.split('_')
+                    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ');
+                }
+                return value;
+              });
+
+              // Filter out any null/undefined values and join with ' - '
+              const displayText = displayValues.filter(Boolean).join(' - ');
+              
+              return {
+                value: item.id, // Use ID as the value for the select
+                label: displayText || `${field.name} #${item.id}`, // Fallback if no display text
+                item // Keep the full item for reference
+              };
+            });
+          },
+          onError: (error) => {
+            console.error(`Error loading relationship items for ${field.name}:`, error);
+            this.relationshipItems[field.name] = [];
+          }
+        });
+      } catch (error) {
+        console.error(`Error loading relationship items for ${field.name}:`, error);
+        this.relationshipItems[field.name] = [];
+      }
+    }
+  }
+
+  getInputType(fieldType: string): string {
+    // Map GraphQL types to HTML input types
+    const typeMap: { [key: string]: string } = {
+      'String': 'text',
+      'Int': 'number',
+      'Float': 'number',
+      'Boolean': 'checkbox',
+      'GraphQL::Types::ISO8601DateTime': 'datetime-local',
+      'GraphQL::Types::ISO8601Date': 'date'
+    };
+    return typeMap[fieldType] || 'text';
+  }
+
+  async getRelationshipItems(relationshipName: string): Promise<any[]> {
+    // This is a placeholder - you'll need to implement the actual data fetching
+    // based on the relationship type and model
+    return [];
+  }
+
+  async fetchItems() {
+    this.loading = true;
+    
+    try {
+      await this.executeQuery<ListResponse>({
+        query: List<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>Query,
+        variables: {
+          page: this.pagination.currentPage,
+          perPage: this.pagination.perPage,
+          filters: this.filters
+        },
+        responsePath: 'list<%= h.capitalize(modelName) %><%= h.pluralize(modelName).slice(modelName.length) %>',
+        onSuccess: (response: ListResponse) => {
+          this.items = response.data || [];
+          this.pagination = {
+            currentPage: response.options.currentPage,
+            perPage: response.options.perPage,
+            totalPages: response.options.totalPages,
+            totalCount: response.options.totalCount
+          };
+        },
+        onError: (error) => {
+          console.error('Error fetching <%= h.pluralize(modelName) %>:', error);
+          this.error = error;
+        }
+      });
+    } catch (error) {
+      console.error('Error in fetchItems:', error);
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  refresh() {
+    this.fetchItems();
+  }
+
+  /**
+   * Apply filters and refresh the list
+   */
+  applyFilters() {
+    if (this.searchTerm) {
+      this.filters = { search: this.searchTerm };
+    } else {
+      this.filters = {};
+    }
+    
+    // Reset to first page when filters change
+    this.pagination.currentPage = 1;
+    this.fetchItems();
+  }
+
+  async doRefresh(event: any) {
+    await this.fetchItems();
+    event.target.complete();
+  }
+
+  async changePage(page: number) {
+    if (page >= 1 && page <= this.pagination.totalPages) {
+      this.pagination.currentPage = page;
+      await this.fetchItems();
+    }
+  }
+
+  goToPage(page: number) {
+    this.changePage(page);
+  }
+
+  async nextPage() {
+    if (this.pagination.currentPage < this.pagination.totalPages) {
+      await this.changePage(this.pagination.currentPage + 1);
+    }
+  }
+
+  async previousPage() {
+    if (this.pagination.currentPage > 1) {
+      await this.changePage(this.pagination.currentPage - 1);
+    }
+  }
+
+  get canGoNext(): boolean {
+    return this.pagination.currentPage < this.pagination.totalPages;
+  }
+
+  get canGoPrevious(): boolean {
+    return this.pagination.currentPage > 1;
+  }
+
+  get totalPages(): number {
+    return this.pagination.totalPages;
+  }
+
+  get currentPage(): number {
+    return this.pagination.currentPage;
+  }
+
+  /**
+   * Converts camelCase field names to readable labels
+   */
+  getFieldLabel(field: string): string {
+    // Convert camelCase to Title Case with spaces
+    return field
+      // Insert a space before all capital letters
+      .replace(/([A-Z])/g, ' $1')
+      // Capitalize the first letter
+      .replace(/^./, str => str.toUpperCase())
+      .trim();
+  }
+
+  /**
+   * Format field value based on field type and name
+   */
+  formatFieldValue(field: string, value: any): string {
+    if (value === null || value === undefined) {
+      return '-';
+    }
+
+    if (field.includes('At') || field.includes('Date')) {
+      return new Date(value).toLocaleString();
+    }
+
+    if ((field.includes('Status') || field.includes('Type') || field.includes('Category')) && typeof value === 'string') {
+      return value.split('_')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    return String(value);
+  }
+
+  // Add loadMore method
+  async loadMore(event: any) {
+    if (this.pagination.currentPage < this.pagination.totalPages) {
+      this.pagination.currentPage++;
+      await this.fetchItems();
+    }
+    event.target.complete();
+  }
+
+  async onSubmit(form: NgForm) {
+    if (form.valid) {
+      try {
+        await this.executeMutation({
+          mutation: Create<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>Mutation,
+          variables: {
+            input: this.formData
+          },
+          responsePath: 'create<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join('') %>',
+          successMessage: '<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %> created successfully',
+          onSuccess: async () => {
+            // Update the actions map
+            if (this.formData.<%= h.toCamelCase(modelName) %>Id) {
+              this.itemActions[this.formData.<%= h.toCamelCase(modelName) %>Id] = true;
+            }
+            this.setOpen(false);
+            this.refresh();
+
+            // Show success toast
+            const toast = await this.toastController.create({
+              message: '<%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ') %> created successfully',
+              duration: 2000,
+              position: 'bottom',
+              color: 'success',
+              buttons: [
+                {
+                  text: 'Close',
+                  role: 'cancel'
+                }
+              ]
+            });
+            await toast.present();
+          }
+        });
+      } catch (error) {
+        console.error('Error creating <%= actionTargetModel %>:', error);
+        // Show error toast
+        const toast = await this.toastController.create({
+          message: 'Error creating <%= actionTargetModel.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ').toLowerCase() %>',
+          duration: 2000,
+          position: 'bottom',
+          color: 'danger',
+          buttons: [
+            {
+              text: 'Close',
+              role: 'cancel'
+            }
+          ]
+        });
+        await toast.present();
+      }
+    }
+  }
+} 
