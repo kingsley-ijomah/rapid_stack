@@ -103,6 +103,41 @@ def get_release_type
   end
 end
 
+def handle_git_operations(version)
+  puts "\nPreparing git operations for release..."
+
+  # Stage all changes
+  system("git add .") or raise "Failed to stage changes"
+
+  # Get commit message
+  print "\nEnter commit message (or press Enter for default): "
+  commit_message = STDIN.gets&.chomp
+  commit_message = "Release version #{version}" if commit_message.empty?
+
+  # Commit changes
+  system(%(git commit -m "#{commit_message}")) or raise "Failed to commit changes"
+
+  # Create tag
+  tag_name = "v#{version}"
+  print "\nEnter tag message (or press Enter for default): "
+  tag_message = STDIN.gets&.chomp
+  tag_message = "Release version #{version}" if tag_message.empty?
+
+  system(%(git tag -a #{tag_name} -m "#{tag_message}")) or raise "Failed to create tag"
+
+  # Push changes
+  print "\nPush changes to remote? [y/N]: "
+  should_push = STDIN.gets&.chomp&.downcase == "y"
+
+  if should_push
+    system("git push origin main") or raise "Failed to push changes"
+    system("git push origin #{tag_name}") or raise "Failed to push tag"
+    puts "Changes and tag pushed to remote successfully!"
+  else
+    puts "Skipping push to remote. You can push manually later."
+  end
+end
+
 def main
   puts "\n============================================"
   puts "       Rapid Stack Release Helper"
@@ -134,7 +169,10 @@ def main
         changes = get_changes
         update_changelog(new_version, changes)
         puts "CHANGELOG.md updated successfully!"
+
         build_gem
+
+        handle_git_operations(new_version)
         break
       end
     else
