@@ -1,3 +1,13 @@
+## [1.0.0] - 2025-03-26
+### Added
+- Make generators idempotent
+- Added more generators
+
+### Changed
+- Renamed generators
+- Grouped generators
+- Used rapid instead of yo call
+
 ## [0.1.1] - 2025-03-13
 ### Fixed
 - Fixed typo in Gemspec
