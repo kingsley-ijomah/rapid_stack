@@ -117,18 +117,27 @@ def handle_git_operations(version)
   tag_name = "v#{version}"
   tag_message = "Release version #{version}"
   system(%(git tag -a #{tag_name} -m "#{tag_message}")) or raise "Failed to create tag"
+end
 
-  # Push changes
-  print "\nPush changes to remote? [y/N]: "
-  should_push = STDIN.gets&.chomp&.downcase == "y"
+def push_to_rubygems(version)
+  gem_file = "rapid_stack-#{version}.gem"
+  gem_path = File.join(__dir__, "pkg", gem_file)
 
-  if should_push
-    system("git push origin main") or raise "Failed to push changes"
-    system("git push origin #{tag_name}") or raise "Failed to push tag"
-    puts "Changes and tag pushed to remote successfully!"
-  else
-    puts "Skipping push to remote. You can push manually later."
+  puts "\nPushing gem to RubyGems..."
+  system("gem push #{gem_path}") or raise "Failed to push gem to RubyGems"
+  puts "Gem pushed to RubyGems successfully!"
+end
+
+def cleanup
+  puts "\nCleaning up..."
+  # Remove the gem file from pkg directory
+  pkg_dir = File.join(__dir__, "pkg")
+  gem_files = Dir.glob(File.join(pkg_dir, "rapid_stack-*.gem"))
+  gem_files.each do |file|
+    File.delete(file)
+    puts "Removed: #{File.basename(file)}"
   end
+  puts "Cleanup complete!"
 end
 
 def main
@@ -164,8 +173,21 @@ def main
         puts "CHANGELOG.md updated successfully!"
 
         build_gem
-
         handle_git_operations(new_version)
+        push_to_rubygems(new_version)
+        cleanup
+
+        # Push changes to git after cleanup
+        print "\nPush changes to remote? [y/N]: "
+        should_push = STDIN.gets&.chomp&.downcase == "y"
+
+        if should_push
+          system("git push origin main") or raise "Failed to push changes"
+          system("git push origin v#{new_version}") or raise "Failed to push tag"
+          puts "Changes and tag pushed to remote successfully!"
+        else
+          puts "Skipping push to remote. You can push manually later."
+        end
         break
       end
     else
