@@ -1,5 +1,0 @@
-module GraphqlHelper
-  def graphql_query(query:, variables: {}, context: {})
-    <%= projectName.camelize %>Schema.execute(query, variables: variables, context: context)
-  end
-end 

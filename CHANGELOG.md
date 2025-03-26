@@ -1,9 +1,3 @@
-## [0.2.1] - 2025-03-26
-### Added
-- change 1
-
-# Changelog
-
 ## [0.1.1] - 2025-03-13
 ### Fixed
 - Fixed typo in Gemspec
