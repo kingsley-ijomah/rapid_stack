@@ -109,20 +109,13 @@ def handle_git_operations(version)
   # Stage all changes
   system("git add .") or raise "Failed to stage changes"
 
-  # Get commit message
-  print "\nEnter commit message (or press Enter for default): "
-  commit_message = STDIN.gets&.chomp
-  commit_message = "Release version #{version}" if commit_message.empty?
-
-  # Commit changes
+  # Commit changes with default message
+  commit_message = "Release version #{version}"
   system(%(git commit -m "#{commit_message}")) or raise "Failed to commit changes"
 
-  # Create tag
+  # Create tag with default message
   tag_name = "v#{version}"
-  print "\nEnter tag message (or press Enter for default): "
-  tag_message = STDIN.gets&.chomp
-  tag_message = "Release version #{version}" if tag_message.empty?
-
+  tag_message = "Release version #{version}"
   system(%(git tag -a #{tag_name} -m "#{tag_message}")) or raise "Failed to create tag"
 
   # Push changes
