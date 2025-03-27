@@ -223,37 +223,29 @@ def main
       update_version(new_version)
       puts "Version updated successfully!"
 
-      release_type = get_release_type
+      # For testing changelog only
+      puts "\nNow let's update the CHANGELOG.md..."
+      changes = get_changes_from_commits
+      update_changelog(new_version, changes)
+      puts "CHANGELOG.md updated successfully!"
 
-      if release_type == "1" # Local testing
-        gem_path = build_gem
-        install_gem_locally(gem_path)
-        puts "\nLocal testing complete! You can now test the gem."
-        break
-      else # Release to RubyGems
-        puts "\nNow let's update the CHANGELOG.md..."
-        changes = get_changes_from_commits
-        update_changelog(new_version, changes)
-        puts "CHANGELOG.md updated successfully!"
+      build_gem
+      handle_git_operations(new_version)
+      push_to_rubygems(new_version)
+      cleanup
 
-        build_gem
-        handle_git_operations(new_version)
-        push_to_rubygems(new_version)
-        cleanup
+      # Push changes to git after cleanup
+      print "\nPush changes to remote? [y/N]: "
+      should_push = STDIN.gets&.chomp&.downcase == "y"
 
-        # Push changes to git after cleanup
-        print "\nPush changes to remote? [y/N]: "
-        should_push = STDIN.gets&.chomp&.downcase == "y"
-
-        if should_push
-          system("git push origin main") or raise "Failed to push changes"
-          system("git push origin v#{new_version}") or raise "Failed to push tag"
-          puts "Changes and tag pushed to remote successfully!"
-        else
-          puts "Skipping push to remote. You can push manually later."
-        end
-        break
+      if should_push
+        system("git push origin main") or raise "Failed to push changes"
+        system("git push origin v#{new_version}") or raise "Failed to push tag"
+        puts "Changes and tag pushed to remote successfully!"
+      else
+        puts "Skipping push to remote. You can push manually later."
       end
+      break
     else
       puts "Invalid version format. Please use major.minor.patch (e.g., 0.1.1)"
     end
