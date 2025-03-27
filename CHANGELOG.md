@@ -1,3 +1,11 @@
+## [1.0.1] - 2025-03-27
+### Added
+- rapid init can now automatically install git and gh
+
+### Changed
+- Add automatic changelog to release script
+- Add commit message convention to README
+
 ## [1.0.0] - 2025-03-26
 ### Added
 - Make generators idempotent
