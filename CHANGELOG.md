@@ -1,3 +1,8 @@
+## [1.0.0] - 2025-03-27
+### Changed
+- Add automatic changelog to release script
+- Add commit message convention to README
+
 ## [1.0.0] - 2025-03-26
 ### Added
 - Make generators idempotent
