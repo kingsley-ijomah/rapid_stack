@@ -1,3 +1,7 @@
+## [1.0.2] - 2025-03-27
+### Changed
+- Changed wrong formatting on gemspec
+
 ## [1.0.1] - 2025-03-27
 ### Added
 - rapid init can now automatically install git and gh
