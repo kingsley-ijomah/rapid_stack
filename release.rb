@@ -3,6 +3,12 @@
 require "fileutils"
 require "date"
 
+# Commit message patterns:
+# feat: Add new feature X
+# fix: Fix bug in Y
+# change: Update Z to be better
+# remove: Remove deprecated feature W
+
 def current_version
   version_file = File.join(__dir__, "lib", "rapid_stack", "version.rb")
   content = File.read(version_file)
@@ -18,6 +24,64 @@ end
 
 def validate_version(version)
   version.match?(/^\d+\.\d+\.\d+$/)
+end
+
+def get_last_tag
+  last_tag = `git describe --tags --abbrev=0 2>/dev/null`.chomp
+  last_tag.empty? ? nil : last_tag
+end
+
+def get_commits_since_last_tag
+  last_tag = get_last_tag
+  if last_tag
+    `git log #{last_tag}..HEAD --pretty=format:"%s"`.split("\n")
+  else
+    `git log --pretty=format:"%s"`.split("\n")
+  end
+end
+
+def parse_commit_message(message)
+  case message
+  when /^feat: (.+)$/i
+    [:added, Regexp.last_match(1)]
+  when /^fix: (.+)$/i
+    [:fixed, Regexp.last_match(1)]
+  when /^change: (.+)$/i
+    [:changed, Regexp.last_match(1)]
+  when /^remove: (.+)$/i
+    [:removed, Regexp.last_match(1)]
+  end
+end
+
+def get_changes_from_commits
+  changes = {
+    added: [],
+    changed: [],
+    fixed: [],
+    removed: []
+  }
+
+  commits = get_commits_since_last_tag
+  return changes if commits.empty?
+
+  puts "\nFound the following changes in commits:"
+  puts "----------------------------------------"
+
+  commits.each do |commit|
+    result = parse_commit_message(commit)
+    next unless result
+
+    category, message = result
+    changes[category] << message
+    puts "#{category.upcase}: #{message}"
+  end
+
+  print "\nDo you want to use these changes for the changelog? [Y/n]: "
+  return changes if STDIN.gets&.chomp&.downcase != "n"
+
+  # If user doesn't want to use commit messages, fall back to manual entry
+  puts "\nEnter changes manually:"
+  get_changes
 end
 
 def get_changes
@@ -168,7 +232,7 @@ def main
         break
       else # Release to RubyGems
         puts "\nNow let's update the CHANGELOG.md..."
-        changes = get_changes
+        changes = get_changes_from_commits
         update_changelog(new_version, changes)
         puts "CHANGELOG.md updated successfully!"
 
