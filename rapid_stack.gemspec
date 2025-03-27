@@ -12,13 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Rapid Stack transforms complex technical architecture into a simple, repeatable process using generators."
   spec.description = "It's your entire technical stack, from cloud architecture to databases, from server-side services to client interfaces, all unified into one cohesive system.\n\n" \
     "Think of it as your development blueprint that ensures consistency, accelerates learning, and eliminates the guesswork from building modern applications. " \
-    "Whether you're starting a new project or scaling an existing one, Rapid Stack gives you the confidence to build faster and smarter, with every component perfectly orchestrated." \
-    "Key Features:\n" \
-    "• Automated Infrastructure: Leverages Terraform, Ansible, DigitalOcean droplets, and Docker for automated provisioning\n" \
-    "• Backend Stack: Rails 8.0 API with MongoDB and GraphQL integration\n" \
-    "• Frontend Framework: Ionic Angular with automated iOS/Android deployment\n" \
-    "• DevOps Tools: HashiCorp Vault for secrets, GitHub Actions CI/CD, Graylog monitoring\n" \
-    "• Production Ready: NGINX reverse proxy with SSL, Portainer container management\n\n"
+    "Whether you're starting a new project or scaling an existing one, Rapid Stack gives you the confidence to build faster and smarter, with every component perfectly orchestrated."
 
   spec.homepage = "https://github.com/kingsley-ijomah/rapid_stack"
   spec.license = "MIT"
