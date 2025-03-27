@@ -56,10 +56,94 @@ Think of it as your development blueprint that ensures consistency, accelerates 
 
 ## Prerequisites
 
+### Required Dependencies
+These must be installed before using RapidStack:
+
+- Unix-based system (Linux, MacOS)
+- At least 8GB of RAM (16GB recommended)
+- At least 25GB of free disk space
+- Modern web browser (Chrome, Firefox, Edge)
+- Git
 - Ruby 3.3.1
 - Node.js 20+
-- Docker and Docker Compose
+- Docker Desktop
+- Docker Compose
+- Digital Ocean account
+- DO CLI
+
+### Optional Dependencies
+These can be installed during the setup process:
+
+- Ruby on Rails 8+
+- MongoDB & MongoDB Compass
+- Angular CLI & Ionic CLI
+- GraphQL CLI tools
+- Terraform
+- Ansible
+- Nginx
+- HashiCorp Vault
+- Portainer
+- Graylog
+- RSpec
+- Jest
+- SCSS compiler
+- TypeScript compiler
+- Github CLI
+- Certbot
+- Insomnia
+- Apollo
+- Cursor/VSCode
+
+## System Requirements
+
+### Core Dev Tools
 - Git
+- Github CLI
+- Node.js 20+
+- npm
+- Angular CLI
+- Ionic CLI
+
+### Backend Development
+- Ruby on Rails 8+
+- MongoDB
+- GraphQL CLI tools
+- RSpec (for testing)
+- Ruby (3.3.1)
+- MongoDB Compass
+
+### Frontend Development
+- Angular
+- Ionic
+- SCSS compiler
+- Typescript compiler
+- Jest (for testing)
+
+### Devops & Infrastructure
+- Docker (Docker Desktop)
+- Docker Compose (for multi-container applications)
+- Terraform (for infrastructure as code)
+- Ansible (for configuration management)
+- Nginx (for reverse proxy)
+- HashiCorp Vault (for secrets management)
+- Portainer (for Docker)
+- Github Actions
+- Graylog (for logging)
+- Digital Ocean (for hosting)
+- DO CLI (for Digital Ocean)
+
+### Security & Secrets Management
+- HashiCorp Vault
+- Github Secrets
+- Certbot (for SSL certificates)
+
+### API Development
+- Insomnia
+- Apollo
+
+### Text Editors
+- Cursor
+- VSCode
 
 ## Installation
 

@@ -1,0 +1,18 @@
+Password Reset Request
+
+Hello <%= @user.full_name %>,
+
+You recently requested to reset your password for your <%= ConfigHelper.app_credentials['name'] %> account. Use the code below to complete the process:
+
+<%= @otp.respond_to?(:code) ? @otp.code : @otp %>
+
+<% if @otp.respond_to?(:expiry_minutes) %>
+This code will expire in <%= @otp.expiry_minutes %> minutes.
+<% else %>
+This code will expire soon.
+<% end %>
+
+If you did not request a password reset, please ignore this email or contact support at <%= ConfigHelper.mailer_credentials['support_address'] %> if you have questions.
+
+Best regards,
+The <%= ConfigHelper.app_credentials['name'] %> Team 

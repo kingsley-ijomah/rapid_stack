@@ -1,0 +1,56 @@
+require_relative "boot"
+
+require "rails"
+# Pick the frameworks you want:
+require "active_model/railtie"
+require "active_job/railtie"
+# require "active_record/railtie"
+# require "active_storage/engine"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+# require "action_mailbox/engine"
+# require "action_text/engine"
+require "action_view/railtie"
+require "action_cable/engine"
+# require "rails/test_unit/railtie"
+
+# Require the gems listed in Gemfile, including any gems
+# you've limited to :test, :development, or :production.
+Bundler.require(*Rails.groups)
+
+module <%= projectName.camelize %>
+  class Application < Rails::Application
+    # Use environment variables for credentials
+    config.require_master_key = false
+    
+    # Initialize configuration defaults for originally generated Rails version.
+    config.load_defaults <%= railsVersion.split('.')[0..1].join('.') %>
+
+    config.autoload_lib(ignore: %w(assets tasks))
+
+    config.api_only = true
+
+    # Configure GraphQL logging
+    config.after_initialize do
+      if defined?(GraphQL::Current)
+        config.log_tags = [
+          :request_id,
+          :remote_ip,
+          # GraphQL-Ruby query log tags:
+          -> request { "operation: #{GraphQL::Current.operation_name}" if GraphQL::Current.operation_name },
+          -> request { "field: #{GraphQL::Current.field&.path}" if GraphQL::Current.field&.path },
+        ]
+      end
+    end
+
+    config.generators do |g|
+      g.test_framework :rspec,
+        fixtures: true,
+        helper_specs: true,
+        routing_specs: true,
+        request_specs: true,
+        controller_specs: true
+      g.fixture_replacement :factory_bot, dir: "spec/factories"
+    end
+  end
+end

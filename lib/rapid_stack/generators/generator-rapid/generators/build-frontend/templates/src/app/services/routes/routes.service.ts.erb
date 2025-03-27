@@ -1,0 +1,73 @@
+import { Injectable } from '@angular/core';
+import { Route, Routes } from '@angular/router';
+import { routes } from '../../app.routes';
+
+export interface RouteLink {
+  path: string;
+  title: string;
+  icon: string;
+  description: string;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class RoutesService {
+  private readonly routeConfig: { [key: string]: RouteLink } = {
+    auth: {
+      title: 'Authentication',
+      icon: 'key-outline',
+      description: 'Login and account management'
+    },
+    admin: {
+      title: 'Admin Portal',
+      icon: 'briefcase-outline',
+      description: 'Administrative tools and settings'
+    },
+    guest: {
+      title: 'Guest Portal',
+      icon: 'people-outline',
+      description: 'Guest features and services'
+    },
+    owner: {
+      title: 'Owner Portal',
+      icon: 'person-outline',
+      description: 'Business and resource management'
+    }
+  };
+
+  getMainRoutes(): RouteLink[] {
+    return routes
+      .filter(route => this.isMainRoute(route))
+      .map(route => this.createRouteLink(route));
+  }
+
+  private isMainRoute(route: Route): boolean {
+    // Filter out the default route ('') and routes without paths
+    return route.path !== '' && 
+           route.path !== undefined && 
+           !route.path.includes('/') && 
+           !route.path.includes('*');
+  }
+
+  private createRouteLink(route: Route): RouteLink {
+    const path = route.path || '';
+    const config = this.routeConfig[path] || {
+      title: this.formatTitle(path),
+      icon: 'apps-outline',
+      description: `Access the ${this.formatTitle(path)} section`
+    };
+
+    return {
+      path: `/${path}`,
+      ...config
+    };
+  }
+
+  private formatTitle(path: string): string {
+    return path
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+} 

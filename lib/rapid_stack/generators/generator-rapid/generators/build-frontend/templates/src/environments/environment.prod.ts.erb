@@ -1,0 +1,17 @@
+export const environment = {
+  production: true,
+  appName: 'Rapid Stack',
+  supportEmail: 'support@domain.com',
+  companyInfo: {
+    year: new Date().getFullYear(),
+    website: 'domain.com',
+    socialLinks: {
+      facebook: 'https://facebook.com/domain',
+      twitter: 'https://twitter.com/domain',
+      instagram: 'https://instagram.com/domain'
+    }
+  },
+  backendEndpoint: '/graphql',
+  // generated with: openssl rand -hex 32
+  encryptionKey: '<%= encryptionKey %>',
+}; 
