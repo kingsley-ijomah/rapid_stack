@@ -73,7 +73,6 @@ gem install rapid_stack
 rapid_stack_setup
 ```
 
-
 ## Using Generators
 
 After installing the generators, you can use the following commands:
@@ -96,9 +95,36 @@ rapid
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -am 'Add some amazing feature'`)
+3. Commit your changes following the commit message conventions below
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+### Commit Message Conventions
+
+When contributing to RapidStack, follow these commit message conventions to ensure proper changelog generation:
+
+```bash
+# Format: <type>: <description>
+
+# Examples of git commit commands:
+git commit -m "feat: Add new GraphQL mutation for user creation"
+git commit -m "fix: Resolve authentication token expiration issue"
+git commit -m "change: Update Docker configuration for better performance"
+git commit -m "remove: Remove deprecated API endpoint"
+```
+
+The commit message types and their corresponding changelog sections:
+
+- `feat:` - New features (Added section)
+- `fix:` - Bug fixes (Fixed section)
+- `change:` - Changes and improvements (Changed section)
+- `remove:` - Removed features (Removed section)
+
+When you run `release.rb`, it will automatically:
+1. Collect all commits since the last tag
+2. Parse commit messages following these conventions
+3. Generate appropriate changelog entries
+4. Show you the changes it found for confirmation
 
 ## License
 
