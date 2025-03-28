@@ -1,28 +1,25 @@
 {
   "name": "generator-rapid",
   "version": "1.0.0",
-  "description": "Rapid application generator",
-  "bin": {
-    "rapid": "./bin/rapid.js"
+  "description": "A Yeoman generator for rapid stack development",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
   },
-  "files": [
-    "generators",
-    "bin"
-  ],
   "keywords": [
-    "yeoman-generator",
-    "rapidstack"
+    "yeoman-generator"
   ],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.8.4",
-    "ejs": "^3.1.10",
-    "js-yaml": "^4.1.0",
-    "ora": "^8.2.0",
-    "rimraf": "^3.0.2",
-    "yaml": "^2.3.4",
-    "yeoman-environment": "^3.19.3",
-    "yeoman-generator": "^5.8.0"
+    "yeoman-generator": "^5.0.0"
   },
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@types/jest": "^29.0.0",
+    "babel-jest": "^29.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  }
 }
