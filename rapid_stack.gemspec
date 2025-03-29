@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.homepage = "https://github.com/kingsley-ijomah/rapid_stack"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.3.1"
+  spec.required_ruby_version = ">= 2.7.0"
 
   spec.metadata = {
     "homepage_uri" => spec.homepage,

@@ -78,7 +78,6 @@ module RapidStack
     def display_requirements(app_name)
       say("\nProject Requirements:", :green)
       say("─" * 50)
-      say("Ruby Version: >= 3.3.1")
       say("Rails Version: ~> 8.0.1")
       say("Other dependencies:")
       say("  • Thor (~> 1.0)")
