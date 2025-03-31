@@ -5,7 +5,7 @@ This generator takes a schema file from the `backend/_schema` directory and gene
 ## Usage
 
 ```bash
-yo rapid:schema-runner
+rapid schema:run
 ```
 
 ## What it does

@@ -15,7 +15,7 @@ This generator helps you set up a new Rails API application with a specific vers
 Run the generator using:
 
 ```bash
-yo rapid:rails-api-installer
+rapid init
 ```
 
 The generator will:

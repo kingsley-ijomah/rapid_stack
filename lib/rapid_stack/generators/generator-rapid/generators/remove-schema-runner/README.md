@@ -5,7 +5,7 @@ This generator removes models that were created using the `schema-runner` genera
 ## Usage
 
 ```bash
-yo rapid:remove-schema-runner
+rapid schema:remove
 ```
 
 ## What it does
