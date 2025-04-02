@@ -1,0 +1,56 @@
+.company-registration-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.company-form {
+  .form-field {
+    margin-bottom: 16px;
+    --padding-start: 0;
+    --padding-end: 0;
+    --inner-padding-end: 0;
+  }
+
+  .error-message {
+    font-size: 12px;
+    padding: 4px 0;
+    display: block;
+  }
+
+  .submit-button {
+    margin-top: 24px;
+  }
+}
+
+.signup-link {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+
+  a {
+    color: var(--ion-color-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.status-messages {
+  margin: 16px 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-end: 0;
+
+  &.error-messages {
+    p {
+      margin: 4px 0;
+    }
+  }
+}
+
+ion-spinner {
+  margin-right: 8px;
+} 

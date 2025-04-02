@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Register Company</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="company-registration-container">
+    <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="company-form">
+      <!-- Company Name -->
+      <ion-item class="form-field">
+        <ion-label position="floating">Company Name</ion-label>
+        <ion-input
+          type="text"
+          formControlName="name"
+          [class.ion-invalid]="isSubmitted && f['name'].errors"
+          [class.ion-touched]="isSubmitted && f['name'].errors"
+        ></ion-input>
+      </ion-item>
+      <ion-text color="danger" class="error-message" *ngIf="isSubmitted && f['name'].errors">
+        {{ getErrorMessage('name') }}
+      </ion-text>
+
+      <!-- Backend Errors -->
+      <ion-item lines="none" *ngIf="backendErrors?.length" class="status-messages error-messages">
+        <ion-text color="danger">
+          <ng-container *ngFor="let error of backendErrors">
+            <p>{{ error }}</p>
+          </ng-container>
+        </ion-text>
+      </ion-item>
+
+      <!-- Submit Button -->
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        class="submit-button"
+        [disabled]="companyForm.invalid && isSubmitted || isLoading"
+      >
+        <ion-spinner *ngIf="isLoading" name="crescent"></ion-spinner>
+        <span *ngIf="!isLoading">Register Company</span>
+      </ion-button>
+
+      <!-- Sign Up Link -->
+      <div class="signup-link">
+        Already have a company code? <a routerLink="/auth/signup">Sign Up</a>
+      </div>
+    </form>
+  </div>
+</ion-content> 

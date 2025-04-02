@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Welcome</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="welcome-container">
+    <h1>Welcome to Rapid Stack</h1>
+    <p>Please choose how you'd like to get started:</p>
+
+    <div class="registration-options">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Register as Company</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Create a new company account and manage your organization</p>
+          <ion-button expand="block" routerLink="/company-registration">
+            Register Company
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Register as Individual</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <p>Sign up as an individual user under an existing company</p>
+          <ion-button expand="block" routerLink="/auth/signup">
+            Register as Individual
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div class="login-section">
+      <p>Already have an account?</p>
+      <ion-button expand="block" routerLink="/auth/login">
+        Login
+      </ion-button>
+    </div>
+  </div>
+</ion-content> 
