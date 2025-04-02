@@ -10,7 +10,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins_list = ENV['ALLOWED_ORIGINS'].present? ? ENV['ALLOWED_ORIGINS'].split(',') : []
     
     if Rails.env.development? && origins_list.empty?
-      origins 'http://localhost:8100', 'http://127.0.0.1:8100'
+      origins %r{\Ahttp://(localhost|127\.0\.0\.1)(:\d+)?\z}
     else
       origins origins_list
     end
