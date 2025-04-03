@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rapid_stack (1.0.4)
+    rapid_stack (1.0.5)
       jwt (~> 2.7)
       rails (~> 8.0, >= 8.0.1)
       thor (~> 1.0)

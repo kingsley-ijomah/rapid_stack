@@ -65,10 +65,10 @@ Gem::Specification.new do |spec|
     1. Node.js version 18.0.0 or higher
     2. npm version 9.0.0 or higher
 
-    To complete the installation and set up the generators:
-
-    1. Run the following command:
+    ###########################################
+    IMPORTANT: Run this command to complete setup:
         rapid_stack_setup
+    ###########################################
 
     For more information, visit: #{spec.homepage}
   MSG
