@@ -2,6 +2,7 @@
 
 require_relative "lib/rapid_stack/version"
 require_relative "lib/rapid_stack/post_install"
+require_relative "lib/rapid_stack/pre_install"
 
 Gem::Specification.new do |spec|
   spec.name = "rapid_stack"
@@ -46,14 +47,21 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency "jwt", "~> 2.7"
+  spec.add_dependency "npm", "~> 0.1.0" # For handling npm operations
   spec.add_dependency "rails", "~> 8.0", ">= 8.0.1"
   spec.add_dependency "thor", "~> 1.0"
   spec.add_dependency "vault", "~> 0.18.0"
 
   # Development dependencies
-  spec.add_development_dependency "npm", "~> 0.1.0" # For handling npm operations
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
+
+  # Pre-install check
+  spec.pre_install_message = <<~MSG
+    =======================================
+    Checking Node.js Requirements...
+    =======================================
+  MSG
 
   # Post-install message
   spec.post_install_message = <<~MSG
@@ -68,6 +76,9 @@ Gem::Specification.new do |spec|
 
     For more information, visit: #{spec.homepage}
   MSG
+
+  # Run pre-install check
+  spec.pre_install_hook = proc { RapidStack::PreInstall.check_node_requirements }
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html

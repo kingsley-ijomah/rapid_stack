@@ -83,9 +83,10 @@ export class CompanyRegistrationPage extends BaseGraphQLPage implements OnInit {
         responsePath: 'createCompany',
         successMessage: 'Company registered successfully!',
         errorMessage: 'Company registration failed. Please check the errors and try again.',
-        onSuccess: () => {
+        onSuccess: (result: any) => {
+          console.log('Company registration result:', result.data.code);
           // After successful company registration, redirect to user registration
-          this.router.navigate(['/auth/signup']);
+          this.router.navigate(['/auth/signup'], { queryParams: { companyCode: result.data.code } });
         },
         onError: (error) => {
           this.backendErrors = this.errorService.errors;
