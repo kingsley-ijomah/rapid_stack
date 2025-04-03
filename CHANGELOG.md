@@ -1,3 +1,13 @@
+## [1.0.6] - 2025-04-03
+### Added
+- In dev mode forgot password will auto launch letter opener
+
+### Changed
+- make installation clearer in gemspec
+
+### Fixed
+- Fixed issue with dev environment not sending mail with letter opener
+
 ## [1.0.5] - 2025-04-03
 ### Fixed
 - remove npm as gem dependency
