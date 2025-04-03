@@ -15,6 +15,11 @@ class User
     <%- roleEnum %>
   }.freeze
 
+  # Add these fields for password recovery
+  field :reset_password_token, type: String
+  field :reset_password_sent_at, type: Time
+  field :reset_password_token_expires_at, type: Time
+
   # Fields
 <% 
 // Find polymorphic fields
