@@ -1,3 +1,7 @@
+## [1.0.5] - 2025-04-03
+### Fixed
+- remove npm as gem dependency
+
 ## [1.0.4] - 2025-04-03
 ### Added
 - Ability to generate company with frontend:company
