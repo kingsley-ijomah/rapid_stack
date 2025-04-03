@@ -47,7 +47,6 @@ Gem::Specification.new do |spec|
 
   # Runtime dependencies
   spec.add_dependency "jwt", "~> 2.7"
-  spec.add_dependency "npm", "~> 0.1.0" # For handling npm operations
   spec.add_dependency "rails", "~> 8.0", ">= 8.0.1"
   spec.add_dependency "thor", "~> 1.0"
   spec.add_dependency "vault", "~> 0.18.0"
