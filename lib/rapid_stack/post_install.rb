@@ -2,11 +2,15 @@
 
 require "fileutils"
 require "pathname"
+require_relative "pre_install"
 
 module RapidStack
   module PostInstall
     def self.install_generators
       puts "\n=== Starting Rapid Stack Generator Installation ==="
+
+      # Check Node.js requirements first
+      RapidStack::PreInstall.check_node_requirements
 
       # Find the generator directory in the installed gem
       gem_dir = Pathname.new(__dir__).parent.parent

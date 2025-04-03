@@ -1,3 +1,7 @@
+## [1.0.4] - 2025-04-03
+### Added
+- Ability to generate company with frontend:company
+
 ## [1.0.3] - 2025-04-02
 ### Added
 - build graphql as part of fullstack generator

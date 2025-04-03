@@ -56,18 +56,15 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop", "~> 1.21"
 
-  # Pre-install check
-  spec.pre_install_message = <<~MSG
-    =======================================
-    Checking Node.js Requirements...
-    =======================================
-  MSG
-
   # Post-install message
   spec.post_install_message = <<~MSG
     =======================================
     Thank you for installing Rapid Stack!
     =======================================
+
+    Before proceeding, please ensure you have:
+    1. Node.js version 18.0.0 or higher
+    2. npm version 9.0.0 or higher
 
     To complete the installation and set up the generators:
 
@@ -76,9 +73,6 @@ Gem::Specification.new do |spec|
 
     For more information, visit: #{spec.homepage}
   MSG
-
-  # Run pre-install check
-  spec.pre_install_hook = proc { RapidStack::PreInstall.check_node_requirements }
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
