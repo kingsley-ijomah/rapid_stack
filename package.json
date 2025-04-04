@@ -1,0 +1,47 @@
+{
+  "name": "rapid-stack",
+  "version": "1.0.0",
+  "description": "Rapid Stack - A modern full-stack development toolkit",
+  "main": "lib/index.js",
+  "bin": {
+    "rapid": "./bin/rapid.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "start": "node ./bin/rapid.js"
+  },
+  "keywords": [
+    "rapid-stack",
+    "full-stack",
+    "generator",
+    "development-tool"
+  ],
+  "author": "Kingsley Ijomah",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.8.4",
+    "yaml": "^2.3.4",
+    "yeoman-environment": "^3.0.0",
+    "yeoman-generator": "^5.0.0",
+    "commander": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kingsley-ijomah/rapid_stack.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kingsley-ijomah/rapid_stack/issues"
+  },
+  "homepage": "https://github.com/kingsley-ijomah/rapid_stack#readme"
+}
