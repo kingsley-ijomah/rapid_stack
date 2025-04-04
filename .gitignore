@@ -1,8 +1,9 @@
 # Dependencies
 node_modules/
-npm-debug.log
-yarn-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
 # Testing
 coverage/
@@ -22,6 +23,11 @@ coverage/
 dist/
 build/
 *.tsbuildinfo
+
+# Documentation
+docs/
+*.md
+!README.md
 
 # Misc
 .tmp/
