@@ -1,3 +1,31 @@
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
+## [1.0.7] - 2025-04-04
+### Feat
+- Added release script for auto deployment
+
 ## [1.0.6] - 2025-04-03
 ### Added
 - In dev mode forgot password will auto launch letter opener

@@ -1,8 +1,8 @@
 {
-  "name": "rapid-stack",
-  "version": "1.0.0",
-  "description": "Rapid Stack - A modern full-stack development toolkit",
-  "main": "lib/index.js",
+  "name": "@codehance/rapid-stack",
+  "version": "1.0.7",
+  "description": "A modern full-stack development toolkit for rapid application development",
+  "main": "lib/generators/app/index.js",
   "bin": {
     "rapid": "./bin/rapid.js"
   },
@@ -11,9 +11,14 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc",
-    "start": "node ./bin/rapid.js"
+    "build": "echo 'Skipping TypeScript build'",
+    "start": "node ./bin/rapid.js",
+    "prepublishOnly": "npm run build"
   },
+  "files": [
+    "bin",
+    "lib"
+  ],
   "keywords": [
     "rapid-stack",
     "full-stack",
@@ -43,5 +48,8 @@
   "bugs": {
     "url": "https://github.com/kingsley-ijomah/rapid_stack/issues"
   },
-  "homepage": "https://github.com/kingsley-ijomah/rapid_stack#readme"
+  "homepage": "https://github.com/kingsley-ijomah/rapid_stack#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
