@@ -63,10 +63,8 @@ if (polymorphicIdFields.length > 0 || polymorphicTypeFields.length > 0) {
 <% }); -%>
 <% } -%>
 
-  # Relationships
-  has_one :two_factor
-
 <% if (relationships && relationships.length > 0) { -%>
+  # Relationships
 <% 
   // Group relationships by type for better organization
   const belongsTo = relationships.filter(rel => rel.type === 'belongs_to');
