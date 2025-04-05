@@ -1,0 +1,84 @@
+class TwoFactor
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  field :enabled, type: Boolean, default: false
+  field :secret, type: String
+  field :backup_codes, type: Array, default: []
+  field :last_used_backup_code, type: String
+  field :qr_code, type: String
+
+  belongs_to :user
+
+  # Validations
+  validates :user, presence: true
+  validates :secret, presence: true, if: :enabled?
+
+  # Generate new secret and QR code
+  def generate_secret
+    self.secret = ROTP::Base32.random_base32
+    generate_qr_code
+    save!
+    secret
+  end
+
+  # Generate QR code for authenticator app
+  def generate_qr_code
+    return unless secret
+
+    begin
+      app_name = ConfigHelper.app_credentials["name"]
+      totp = ROTP::TOTP.new(secret, issuer: app_name)
+      provisioning_uri = totp.provisioning_uri(user.email)
+
+      qrcode = RQRCode::QRCode.new(provisioning_uri)
+      self.qr_code = qrcode.as_svg(
+        offset: 0,
+        color: "000",
+        shape_rendering: "crispEdges",
+        module_size: 4,
+        standalone: true
+      )
+      qr_code
+    rescue => e
+      Rails.logger.error "Error generating QR code for user #{user.id}: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      raise
+    end
+  end
+
+  # Generate new backup codes
+  def generate_backup_codes
+    codes = []
+    10.times do
+      codes << SecureRandom.hex(4).upcase
+    end
+    self.backup_codes = codes
+    save!
+    codes
+  end
+
+  # Verify a backup code
+  def verify_backup_code(code)
+    return false unless backup_codes.include?(code)
+
+    backup_codes.delete(code)
+    save!
+    true
+  end
+
+  # Verify TOTP code
+  def verify_totp(code)
+    return false unless secret
+
+    begin
+      totp = ROTP::TOTP.new(secret)
+      result = totp.verify(code, drift_behind: 15, drift_ahead: 15)
+      result
+    rescue => e
+      Rails.logger.error "Error verifying TOTP code for user #{user.id}: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      false
+    end
+  end
+end
