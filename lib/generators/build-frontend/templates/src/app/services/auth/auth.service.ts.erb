@@ -45,6 +45,7 @@ export class AuthService {
 
   readonly authTokenKey: string = 'authToken';
   readonly userKey: string = 'user';
+  readonly backupCodesKey: string = 'backupCodes';
 
   constructor(
     private apollo: Apollo, 
@@ -414,6 +415,18 @@ private isTokenExpired(token: string): boolean {
         this.token = null;
       }),
       map(() => void 0)  // Ensure the return type is Observable<void>
+    );
+  }
+
+  storeBackupCodes(backupCodes: string[]): Observable<void> {
+    // Encrypt the backup codes before storing
+    const encryptedBackupCodes = this.encrypt(backupCodes);
+    
+    return this.storageService.set(this.backupCodesKey, encryptedBackupCodes).pipe(
+      tap(() => {
+        console.log('Backup codes stored successfully');
+      }),
+      map(() => void 0)
     );
   }
 }
