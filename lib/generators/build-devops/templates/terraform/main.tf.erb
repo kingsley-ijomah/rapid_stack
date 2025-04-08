@@ -8,11 +8,19 @@ terraform {
       source = "hashicorp/time"
       version = "~> 0.9.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
 }
 
 provider "digitalocean" {
   token = var.do_token
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_key
 }
 
 module "digitalocean_ssh_key" {
@@ -37,6 +45,16 @@ module "floating_ips" {
   do_region = var.do_region
   do_token = var.do_token
   droplet_details = module.droplets.droplet_details
+}
+
+module "cloudflare_domain" {
+  source = "./modules/cloudflare_domain"
+  
+  domains    = var.domains
+  target_ip  = module.floating_ips.floating_ip_details["manager1"].floating_ip
+  account_id = var.cloudflare_account_id
+
+  depends_on = [module.floating_ips]
 }
 
 module "domain" {

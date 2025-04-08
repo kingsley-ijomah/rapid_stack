@@ -1,0 +1,42 @@
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
+  }
+}
+
+# Filter domains to ensure we only use root domains
+locals {
+  root_domains = distinct([for domain in var.domains : 
+    replace(domain, "www.", "")
+  ])
+}
+
+# Create zones for each domain
+resource "cloudflare_zone" "domains" {
+  for_each    = toset(local.root_domains)
+  account_id  = var.account_id
+  zone        = each.value
+  plan        = "free"
+}
+
+# Create A records for each domain
+resource "cloudflare_record" "root_records" {
+  for_each = cloudflare_zone.domains
+  zone_id  = each.value.id
+  name     = "@"
+  content  = var.target_ip
+  type     = "A"
+  proxied  = true
+}
+
+resource "cloudflare_record" "www_records" {
+  for_each = cloudflare_zone.domains
+  zone_id  = each.value.id
+  name     = "www"
+  content  = var.target_ip
+  type     = "A"
+  proxied  = true
+} 

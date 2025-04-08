@@ -1,0 +1,4 @@
+output "nameservers" {
+  description = "Cloudflare nameservers for each domain"
+  value       = { for domain, zone in cloudflare_zone.domains : domain => zone.name_servers }
+} 

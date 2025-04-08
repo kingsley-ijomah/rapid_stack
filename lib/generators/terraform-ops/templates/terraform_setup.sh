@@ -184,6 +184,8 @@ mailer_from_address=$(get_yaml_value "$CONFIG_FILE" "mailer_from_address" "confi
 postmark_api_key=$(get_yaml_value "$CONFIG_FILE" "postmark_api_key" "config")
 dockerhub_username=$(get_yaml_value "$CONFIG_FILE" "dockerhub_username" "config")
 dockerhub_password=$(get_yaml_value "$CONFIG_FILE" "dockerhub_password" "config")
+cloudflare_api_key=$(get_yaml_value "$CONFIG_FILE" "cloudflare_api_key" "config")
+cloudflare_account_id=$(get_yaml_value "$CONFIG_FILE" "cloudflare_account_id" "config")
 
 # Get repositories from config
 repositories=$(get_repositories "$CONFIG_FILE")
@@ -269,6 +271,8 @@ mongodb_host = "${mongodb_host}"
 mongodb_database = "${mongodb_database}"
 mongodb_user = "${mongodb_user}"
 mongodb_password = "${mongodb_password}"
+cloudflare_api_key = "${cloudflare_api_key}"
+cloudflare_account_id = "${cloudflare_account_id}"
 EOF
 
     echo "✅ terraform.tfvars has been created successfully!" > /dev/tty
