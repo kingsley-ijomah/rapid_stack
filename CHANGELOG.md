@@ -1,3 +1,7 @@
+## [1.0.9] - 2025-04-09
+### Feat
+- Added check for version with rapid --version or rapid -v
+
 ## [1.0.8] - 2025-04-09
 ### Feat
 - Added a checker you need to run rapid init to initialize project
