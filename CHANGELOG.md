@@ -1,3 +1,20 @@
+## [1.0.8] - 2025-04-09
+### Feat
+- Added a checker you need to run rapid init to initialize project
+- Added ability to auto create frontend repo with rapid build:frontend
+- Generating frontend will also add appName from rapid config file
+- Create cloudflare domain and point to provisioned box
+- Added 2factor auth to frontend:auth
+- 2factor login you generate backend:auth
+
+### Fix
+- Fixed indentation issues with generating auth
+
+### Change
+- Removed domain, loadbalancer and spaces to be handled by cloudflare
+- Refactor frontend:auth remove legacy code
+- Update user model with has_one two_factor for backend:auth
+
 ## [1.0.7] - 2025-04-04
 ### Feat
 - Added release script for auto deployment
