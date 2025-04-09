@@ -33,11 +33,22 @@ config:
   # Domains (comma-separated) - e.g., example.com,www.example.com
   domains: "<%= app_name %>co.uk,www.<%= app_name %>.com"
   # Cloudflare API Key - Get at: https://dash.cloudflare.com/profile/api-tokens
-  # Account - Account Settings (Read)
-  # Zone    - Zone (Edit)
-  # Zone    - DNS (Edit)
-  # Account Resources (All Accounts)
-  # Zone Resources (All Zones)
+  # Account   - Account Settings       (Read)
+  # Account   - Workers Pipelines      (Edit)
+  # Account   - Queues                 (Edit) 
+  # Account   - Vectorize              (Edit)
+  # Account   - Workers R2 Storage     (Edit)
+  # Account   - Workers Tail           (Read)
+  # Account   - Logs                   (Read)
+  # Account   - Workers KV Storage     (Edit)
+  # User      - Memberships            (Read)
+  # User      - User Details           (Read)
+  # Zone      - Zone Settings          (Edit)
+  # Zone      - Zone                   (Edit)
+  # Zone      - Workers Routes         (Edit)
+  # Zone      - DNS                    (Edit)
+  # Account   - Resources              (All Accounts)
+  # Zone      - Resources              (All Zones)
   cloudflare_api_key: ""
   # Cloudflare Acc Id - Get at: https://dash.cloudflare.com/id-is-here/home
   cloudflare_account_id: ""
