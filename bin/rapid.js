@@ -5,6 +5,13 @@ const Environment = require('yeoman-environment');
 const args = process.argv.slice(2);
 const command = args[0];
 
+// Check for version flag
+if (command === '--version' || command === '-v') {
+  const packageJson = require('../package.json');
+  console.log(packageJson.version);
+  process.exit(0);
+}
+
 // Parse command line options
 const options = {};
 let remainingArgs = [];
@@ -57,6 +64,7 @@ if (!command) {
   console.error('\nOptions:');
   console.error(' --yes, -y - Automatically answer "yes" to all prompts');
   console.error(' --auth-only - Only add authentication');
+  console.error(' --version, -v - Show version number');
   process.exit(1);
 }
 
