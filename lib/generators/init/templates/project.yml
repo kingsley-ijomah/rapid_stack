@@ -1,37 +1,6 @@
 # Project Configuration
 config:
-  # Application name - Used for naming resources and services
-  app_name: <%= app_name %>
-  # DigitalOcean API token - Generate at: https://cloud.digitalocean.com/account/api/tokens
-  do_token: ""
-  # DigitalOcean region (e.g., lon1, nyc1, sgp1)
-  do_region: "lon1"
-  # DigitalOcean Spaces region (e.g., fra1, nyc3, sgp1)
-  space_region: "fra1"
-  # Your email address
-  email: ""
-  # Application support email (e.g., support@example.com)
-  app_support_email: "info@<%= app_name %>.com"
-  # Mailer from name (e.g., Emeka Smith)
-  mailer_from_name: ""
-  # Mailer from address (e.g., info@example.com)
-  mailer_from_address: "info@<%= app_name %>.com"
-  # Spaces access ID - Generate at: https://cloud.digitalocean.com/spaces/access_keys
-  spaces_access_id: ""
-  # Spaces secret key - Generate at: https://cloud.digitalocean.com/spaces/access_keys
-  spaces_secret_key: ""
-  # GitHub username
-  github_username: ""
-  # GitHub personal access token - Generate at: https://github.com/settings/tokens
-  repo_access_token: ""
-  # Postmark API key - Get at: https://account.postmarkapp.com/api_tokens
-  postmark_api_key: ""
-  # Docker Hub username - https://hub.docker.com/
-  dockerhub_username: ""
-  # Docker Hub password - https://hub.docker.com/
-  dockerhub_password: ""
-  # Domains (comma-separated) - e.g., example.com,www.example.com
-  domains: "<%= app_name %>co.uk,www.<%= app_name %>.com"
+  ########### Required for Development ###########
   # Cloudflare API Key - Get at: https://dash.cloudflare.com/profile/api-tokens
   # Account   - Account Settings       (Read)
   # Account   - Workers Pipelines      (Edit)
@@ -52,9 +21,40 @@ config:
   cloudflare_api_key: ""
   # Cloudflare Acc Id - Get at: https://dash.cloudflare.com/id-is-here/home
   cloudflare_account_id: ""
- # Cloudflare domain registration enabled
-  cloudflare_domain_registration_enabled: true
-
+  # GitHub username
+  github_username: ""
+  # GitHub personal access token - Generate at: https://github.com/settings/tokens
+  repo_access_token: ""
+  ########### End Required for Development ###########
+  ####################################################
+  # Application name - Used for naming resources and services
+  app_name: <%= app_name %>
+  # DigitalOcean API token - Generate at: https://cloud.digitalocean.com/account/api/tokens
+  do_token: ""
+  # DigitalOcean region (e.g., lon1, nyc1, sgp1)
+  do_region: "lon1"
+  # DigitalOcean Spaces region (e.g., fra1, nyc3, sgp1)
+  space_region: "fra1"
+  # Your email address
+  email: ""
+  # Application support email (e.g., support@example.com)
+  app_support_email: "info@<%= app_name %>.com"
+  # Mailer from name (e.g., Emeka Smith)
+  mailer_from_name: ""
+  # Mailer from address (e.g., info@example.com)
+  mailer_from_address: "info@<%= app_name %>.com"
+  # Spaces access ID - Generate at: https://cloud.digitalocean.com/spaces/access_keys
+  spaces_access_id: ""
+  # Spaces secret key - Generate at: https://cloud.digitalocean.com/spaces/access_keys
+  spaces_secret_key: ""
+  # Postmark API key - Get at: https://account.postmarkapp.com/api_tokens
+  postmark_api_key: ""
+  # Docker Hub username - https://hub.docker.com/
+  dockerhub_username: ""
+  # Docker Hub password - https://hub.docker.com/
+  dockerhub_password: ""
+  # Domains (comma-separated) - e.g., example.com,www.example.com
+  domains: "<%= app_name %>co.uk,www.<%= app_name %>.com"
 # Repository Configuration
 repos:
   frontend: "<%= app_name %>-frontend"
