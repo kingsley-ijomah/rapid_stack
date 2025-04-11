@@ -30,3 +30,27 @@ resource "null_resource" "ansible_inventory" {
     command = "echo '${local.inventory_content}' > ../ansible/inventory.ini"
   }
 }
+
+resource "null_resource" "remove_ssh_keys" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "for ip in $(grep ansible_host ../ansible/inventory.ini | awk '{print $2}' | cut -d'=' -f2); do ssh-keygen -R $ip; done"
+  }
+
+  depends_on = [null_resource.ansible_inventory]
+}
+
+resource "null_resource" "configure_nginx" {
+  triggers = {
+    nginx_config = filemd5("../ansible/roles/nginx/templates/nginx.conf.j2")
+  }
+
+  provisioner "local-exec" {
+    command = "timeout 300 ansible-playbook -i ../ansible/inventory.ini ../ansible/playbook.yml --tags nginx -vvv --skip-tags setup -e 'ansible_ssh_common_args=\"-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=30\"'"
+  }
+
+  depends_on = [null_resource.remove_ssh_keys]
+}

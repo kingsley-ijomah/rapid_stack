@@ -3,6 +3,12 @@
   become: yes
   vars:
     app_name: "{{ lookup('env', 'APP_NAME') | default(inventory_hostname_short) }}"
+    dockerhub_username: "{{ lookup('env', 'DOCKERHUB_USERNAME') }}"
+    dockerhub_password: "{{ lookup('env', 'DOCKERHUB_PASSWORD') }}"
+    domains: "{{ lookup('env', 'DOMAINS') | default('localhost') | split(',') }}"
+
+  roles:
+    - nginx
 
   tasks:
     - name: Update apt and install dependencies
