@@ -1,0 +1,29 @@
+terraform {
+  required_providers {
+    null = {
+      source = "hashicorp/null"
+      version = "~> 3.0"
+    }
+  }
+}
+
+data "external" "project_name" {
+  program = ["sh", "-c", "echo 'Starting script...' >&2; RAPIDRC_PATH=$(find ../.. -name '.rapidrc' | head -n 1); echo 'Found .rapidrc at: $RAPIDRC_PATH' >&2; if [ -z \"$RAPIDRC_PATH\" ]; then echo '{\"error\":\"Could not find .rapidrc file\"}' >&2; exit 1; fi; PROJECT_NAME=$(jq -r '.projectName' \"$RAPIDRC_PATH\"); echo 'Project name: $PROJECT_NAME' >&2; if [ -z \"$PROJECT_NAME\" ]; then echo '{\"error\":\"Could not find project name in .rapidrc\"}' >&2; exit 1; fi; echo \"{\\\"project_name\\\":\\\"$PROJECT_NAME\\\"}\""]
+}
+
+resource "null_resource" "update_config" {
+  provisioner "local-exec" {
+    command = <<-EOT
+      CONFIG_PATH="$HOME/.rapid_stack/${data.external.project_name.result.project_name}_project.yml"
+      if [ ! -f "$CONFIG_PATH" ]; then
+        echo "Config file not found at: $CONFIG_PATH" >&2
+        exit 1
+      fi
+      
+      # Use sed to update the remote_machine field
+      sed -i '' "s/remote_machine:.*/remote_machine: ${var.floating_ip}/" "$CONFIG_PATH"
+      echo "Updated remote_machine in config file with IP: ${var.floating_ip}" >&2
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+} 

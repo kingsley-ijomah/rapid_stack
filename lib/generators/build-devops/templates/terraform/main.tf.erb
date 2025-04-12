@@ -74,6 +74,14 @@ module "ssh_automate" {
   ssh_private_key_path = module.ansible_setup.ssh_private_key_path
 }
 
+module "update_config" {
+  source = "./modules/update_config"
+  
+  floating_ip = module.floating_ips.floating_ip_details["manager1"].floating_ip
+
+  depends_on = [module.floating_ips]
+}
+
 # module "github_secrets" {
 #   source = "./modules/github_secrets"
   

@@ -9,7 +9,6 @@ module ConfigHelper
   def self.app_credentials
     {
       "name" => get_secret("app_name", "Rapid Stack"),
-      "domain" => get_secret("app_domain", "example.com"),
       "support_email" => get_secret("app_support_email", "support@example.com")
     }
   end

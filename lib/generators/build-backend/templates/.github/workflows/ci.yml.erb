@@ -1,0 +1,88 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    # Only trigger workflow when these files/directories change
+    # paths:
+    #   - 'app/**'
+    #   - 'config/**'
+    #   - 'lib/**'
+    #   - 'Gemfile'
+    #   - 'Gemfile.lock'
+    #   - 'Dockerfile'
+    #   - '.dockerignore'
+    #   - 'docker-compose.prod.yml'
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # - name: Build and push
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     target: production
+      #     push: true
+      #     tags: |
+      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:latest
+      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:${{ github.sha }}
+
+      - name: Setup environment variables
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_MACHINE }}
+          username: deployuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Create .env file with MongoDB variables
+            cat << EOF > /home/deployuser/.env
+            APP_NAME=${{ secrets.APP_NAME }}
+            REMOTE_MACHINE=${{ secrets.REMOTE_MACHINE }}
+            DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            DOCKERHUB_PASSWORD=${{ secrets.DOCKERHUB_PASSWORD }}
+            MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
+            MONGODB_USER=${{ secrets.MONGODB_USER }}
+            MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+            EOF
+            
+            # Verify .env file was created
+            cat /home/deployuser/.env
+
+      - name: Copy docker-compose file to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.REMOTE_MACHINE }}
+          username: deployuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.prod.yml"
+          target: "/home/deployuser"
+
+      - name: Deploy to DigitalOcean
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_MACHINE }}
+          username: deployuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Pull the latest image
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:latest
+
+            # Create network if it doesn't exist
+            docker network create app-network || true
+            
+            # Stop and remove existing containers
+            cd /home/deployuser && docker-compose -f docker-compose.prod.yml down
+            
+            # Start services
+            cd /home/deployuser && docker-compose -f docker-compose.prod.yml up -d

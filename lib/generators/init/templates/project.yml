@@ -55,6 +55,8 @@ config:
   dockerhub_password: ""
   # Domains (comma-separated) - e.g., example.com,www.example.com
   domains: "<%= app_name %>co.uk,www.<%= app_name %>.com"
+  # remote machine e.g: DO droplet
+  remote_machine: ""
 # Repository Configuration
 repos:
   frontend: "<%= app_name %>-frontend"
