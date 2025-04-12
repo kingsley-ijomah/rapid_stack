@@ -54,6 +54,13 @@ jobs:
             MONGODB_DATABASE=${{ secrets.MONGODB_DATABASE }}
             MONGODB_USER=${{ secrets.MONGODB_USER }}
             MONGODB_PASSWORD=${{ secrets.MONGODB_PASSWORD }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}
+            RAILS_MASTER_KEY=${{ secrets.RAILS_MASTER_KEY }}
+            APP_SUPPORT_EMAIL=${{ secrets.APP_SUPPORT_EMAIL }}
+            MAILER_FROM_ADDRESS=${{ secrets.MAILER_FROM_ADDRESS }}
+            MAILER_FROM_NAME=${{ secrets.MAILER_FROM_NAME }}
+            POSTMARK_API_TOKEN=${{ secrets.POSTMARK_API_TOKEN }}
             EOF
             
             # Verify .env file was created
@@ -78,8 +85,13 @@ jobs:
             # Pull the latest image
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:latest
 
-            # Create network if it doesn't exist
-            docker network create app-network || true
+            # Check if network exists, create only if it doesn't
+            if ! docker network ls | grep -q app-network; then
+              echo "Creating app-network..."
+              docker network create app-network
+            else
+              echo "app-network already exists"
+            fi
             
             # Stop and remove existing containers
             cd /home/deployuser && docker-compose -f docker-compose.prod.yml down

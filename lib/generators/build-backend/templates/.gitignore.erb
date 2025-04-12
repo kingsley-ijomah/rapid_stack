@@ -1,0 +1,86 @@
+# Ignore bundler config and downloaded gems
+/.bundle
+/vendor/bundle
+
+# Ignore all logfiles and tempfiles
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore uploaded files in development
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+# Ignore master key for decrypting credentials
+/config/master.key
+/config/credentials/*.key
+
+# Ignore environment files
+.env
+.env.*
+!.env.sample
+
+# Ignore database configuration
+/config/database.yml
+
+# Ignore test coverage results
+/coverage/*
+
+# Ignore precompiled assets and cache
+/public/assets
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+# Ignore system files
+.DS_Store
+*.swp
+*~
+
+# Ignore IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Ignore test files
+/spec/tmp
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+
+# Ignore production files
+/public/system
+/public/uploads
+
+# Ignore Redis dump file
+dump.rdb
+
+# Ignore local development files
+.ruby-gemset
+.ruby-version
+.rvmrc
+.byebug_history
+
+# Ignore docker volumes
+/docker/volumes/
+
+# Ignore GraphQL schema dumps
+/app/graphql/schema.graphql
+/app/graphql/schema.json
+
+# Ignore mongoid config with sensitive data
+# config/mongoid.yml 
