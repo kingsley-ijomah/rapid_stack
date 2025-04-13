@@ -39,4 +39,11 @@ resource "cloudflare_record" "www_records" {
   content  = var.target_ip
   type     = "A"
   proxied  = true
+}
+
+# Create Cloudflare Pages project
+resource "cloudflare_pages_project" "frontend" {
+  account_id = var.account_id
+  name       = "${var.app_name}-frontend"
+  production_branch = "main"
 } 
