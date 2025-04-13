@@ -7,9 +7,6 @@
     dockerhub_password: "{{ lookup('env', 'DOCKERHUB_PASSWORD') }}"
     domains: "{{ lookup('env', 'DOMAINS') | default('localhost') | split(',') }}"
 
-  roles:
-    - nginx
-
   tasks:
     - name: Update apt and install dependencies
       apt:
@@ -54,6 +51,15 @@
         create_home: yes
         system: no
 
+    - name: Ensure deployuser owns their home directory
+      ansible.builtin.file:
+        path: /home/deployuser
+        state: directory
+        owner: deployuser
+        group: deployuser
+        mode: '0755'
+        recurse: yes  # This will fix permissions recursively
+
     - name: Add deployuser to sudo group
       ansible.builtin.user:
         name: deployuser
@@ -81,18 +87,63 @@
         group: deployuser
         mode: '0700'
 
-    - name: Copy authorized_keys for deployuser on remote
-      ansible.builtin.copy:
-        src: /root/.ssh/authorized_keys  # Source path on the remote machine
-        dest: /home/deployuser/.ssh/authorized_keys  # Destination path on the remote machine
+    - name: Create empty .env file with proper permissions
+      ansible.builtin.file:
+        path: /home/deployuser/.env
+        state: touch
         owner: deployuser
         group: deployuser
         mode: '0600'
-        remote_src: yes # indicate operation on remote
+
+    - name: Copy authorized_keys for deployuser on remote
+      ansible.builtin.copy:
+        src: /root/.ssh/authorized_keys
+        dest: /home/deployuser/.ssh/authorized_keys
+        owner: deployuser
+        group: deployuser
+        mode: '0600'
+        remote_src: yes
 
     # DigitalOcean Monitoring Agent
     - name: Install DigitalOcean Monitoring Agent
       shell: "curl -sSL https://repos.insights.digitalocean.com/install.sh | sudo bash"
+
+    - name: Create .vault directory for deployuser
+      ansible.builtin.file:
+        path: /home/deployuser/.vault
+        state: directory
+        owner: deployuser
+        group: deployuser
+        mode: '0700'
+
+    - name: Copy vault secrets file
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'HOME') }}/.vault_secrets.vault"
+        dest: /home/deployuser/.vault/vault_secrets.vault
+        owner: deployuser
+        group: deployuser
+        mode: '0600'
+
+    - name: Create Docker Nginx directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: deployuser
+        group: deployuser
+        mode: '0755'
+      with_items:
+        - /home/deployuser/infra/nginx/conf.d
+        - /home/deployuser/infra/nginx/log
+      become: yes
+
+    - name: Copy Docker Nginx configuration
+      ansible.builtin.template:
+        src: templates/docker-nginx.conf.j2
+        dest: /home/deployuser/infra/nginx/conf.d/default.conf
+        owner: deployuser
+        group: deployuser
+        mode: '0644'
+      become: yes
 
     # Open Firewall Ports for HTTP and HTTPS
     - name: Allow HTTP traffic
@@ -124,19 +175,3 @@
         state: present
         update_cache: yes
       become: true
-
-    - name: Create .vault directory for deployuser
-      ansible.builtin.file:
-        path: /home/deployuser/.vault
-        state: directory
-        owner: deployuser
-        group: deployuser
-        mode: '0700'
-
-    - name: Copy vault secrets file
-      ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/.vault_secrets.vault"
-        dest: /home/deployuser/.vault/vault_secrets.vault
-        owner: deployuser
-        group: deployuser
-        mode: '0600'

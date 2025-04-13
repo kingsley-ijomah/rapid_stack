@@ -1,6 +1,9 @@
 # This is the docker-compose file for the production environment
 
 services:
+  # ──────────────────────────────────────────────────────────
+  # MONGODB
+  # ──────────────────────────────────────────────────────────
   mongodb:
     image: mongo:7.0
     networks:
@@ -28,6 +31,9 @@ services:
         gelf-address: "udp://${REMOTE_MACHINE}:12201"
         tag: "mongodb-service"
 
+  # ──────────────────────────────────────────────────────────
+  # BACKEND
+  # ──────────────────────────────────────────────────────────
   backend:
     image: ${DOCKERHUB_USERNAME}/${APP_NAME}-backend:latest
     networks:
@@ -65,41 +71,35 @@ services:
       options:
         gelf-address: "udp://${REMOTE_MACHINE}:12201"
         tag: "backend-service"
-  # nginx:
-  #   image: ${DOCKERHUB_USERNAME}/${APP_NAME}-nginx:latest
-  #   environment:
-  #     - DOMAINS=${DOMAINS}
-  #     - APP_NAME=${APP_NAME}
-  #     - FRONTEND_BUCKET_NAME=${FRONTEND_BUCKET_NAME}
-  #     - SPACES_REGION=${SPACES_REGION}
-  #   networks:
-  #     - app-network
-  #   ports:
-  #     - "80:80"
-  #   depends_on:
-  #     backend:
-  #       condition: service_healthy
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:80/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 20s
-  #   restart: unless-stopped
-  #   volumes:
-  #     - nginx_logs:/var/log/nginx
-  #   logging:
-  #     driver: "gelf"
-  #     options:
-  #       gelf-address: "udp://${REMOTE_MACHINE}:12201"
-  #       tag: "nginx-service"
 
-  # nginx:
-  #   image: nginx:alpine     # pulls the latest Alpine‑based Nginx image
-  #   container_name: nginx   # optional, makes `docker ps` output clearer
-  #   ports:
-  #     - "8080:80"             # host port : container port
-  #   restart: unless-stopped # keeps Nginx running after reboot
+  # ──────────────────────────────────────────────────────────
+  # NGINX
+  # ──────────────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.26-alpine
+    container_name: nginx
+    networks:
+      - app-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro   # proxy config
+      - ./infra/nginx/log:/var/log/nginx            # access / error logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    restart: unless-stopped
+    logging:
+      driver: "gelf"
+      options:
+        gelf-address: "udp://${REMOTE_MACHINE}:12201"
+        tag: nginx-service
 
 volumes:
   mongo_data_prod:

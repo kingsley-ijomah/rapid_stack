@@ -28,15 +28,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # - name: Build and push
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     target: production
-      #     push: true
-      #     tags: |
-      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:latest
-      #       ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:${{ github.sha }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: production
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.APP_NAME }}-backend:${{ github.sha }}          
 
       - name: Setup environment variables
         uses: appleboy/ssh-action@master
@@ -45,7 +45,7 @@ jobs:
           username: deployuser
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Create .env file with MongoDB variables
+            # Create .env file with variables
             cat << EOF > /home/deployuser/.env
             APP_NAME=${{ secrets.APP_NAME }}
             REMOTE_MACHINE=${{ secrets.REMOTE_MACHINE }}
@@ -66,6 +66,20 @@ jobs:
             # Verify .env file was created
             cat /home/deployuser/.env
 
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_MACHINE }}
+          username: deployuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "SSH connection successful"
+            echo "Current directory:"
+            pwd
+            echo "Testing write permissions:"
+            touch /home/deployuser/test_file || echo "Failed to create test file"
+            ls -la /home/deployuser
+
       - name: Copy docker-compose file to server
         uses: appleboy/scp-action@master
         with:
@@ -74,6 +88,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.prod.yml"
           target: "/home/deployuser"
+          debug: true
 
       - name: Deploy to DigitalOcean
         uses: appleboy/ssh-action@master
