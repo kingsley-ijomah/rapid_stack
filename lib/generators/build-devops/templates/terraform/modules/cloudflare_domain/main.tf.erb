@@ -46,4 +46,11 @@ resource "cloudflare_pages_project" "frontend" {
   account_id = var.account_id
   name       = "${var.app_name}-frontend"
   production_branch = "main"
+}
+
+# Add custom domain to Pages project
+resource "cloudflare_pages_domain" "frontend_domain" {
+  account_id   = var.account_id
+  project_name = cloudflare_pages_project.frontend.name
+  domain       = var.domains[0]  # Using the first domain from the list
 } 
