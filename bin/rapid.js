@@ -30,6 +30,7 @@ if (!command) {
   console.error('Please specify a command. Available commands:');
   console.error('\nInitialization:');
   console.error(' init - Initialize a new project');
+  console.error(' run:devops - Run devops pipeline');
   
   console.error('\nBuild Commands:');
   console.error(' build:backend - Build backend infrastructure');
@@ -104,7 +105,8 @@ const generatorMap = {
   'graphql:rm': '../lib/generators/remove-graphql',
   
   // Initialization
-  'init': '../lib/generators/init'
+  'init': '../lib/generators/init',
+  'run:devops': '../lib/generators/terraform-ops'
 };
 
 const generatorPath = generatorMap[command];
