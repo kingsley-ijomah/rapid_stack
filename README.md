@@ -34,13 +34,13 @@ After installation, you can use the `rapid` command to access various generators
 ```bash
 # Initialize a new project
 rapid init
+rapid run:devops
 
 # Build commands
 rapid build:backend
 rapid build:frontend
 rapid build:devops
 rapid build:nginx
-rapid build:terraform
 rapid build:lifecycle
 rapid build:fullstack
 

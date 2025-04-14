@@ -36,8 +36,6 @@ if (!command) {
   console.error(' build:backend - Build backend infrastructure');
   console.error(' build:frontend - Build frontend infrastructure');
   console.error(' build:devops - Build devops infrastructure');
-  console.error(' build:nginx - Build nginx configuration');
-  console.error(' build:terraform - Build terraform infrastructure');
   console.error(' build:lifecycle - Build development lifecycle');
   console.error(' build:fullstack - Build fullstack application');
   
@@ -75,8 +73,6 @@ const generatorMap = {
   'build:backend': '../lib/generators/build-backend',
   'build:frontend': '../lib/generators/build-frontend',
   'build:devops': '../lib/generators/build-devops',
-  'build:nginx': '../lib/generators/build-nginx',
-  'build:terraform': '../lib/generators/terraform-ops',
   'build:lifecycle': '../lib/generators/dev-lifecycle',
   'build:fullstack': '../lib/generators/build-fullstack',
   
