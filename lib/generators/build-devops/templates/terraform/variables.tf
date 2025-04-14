@@ -62,11 +62,6 @@ variable "repo_access_token" {
   sensitive = true
 }
 
-variable "repositories" {
-  description = "List of GitHub repositories to create secrets for"
-  type = list(string)
-}
-
 variable "environment" {
   description = "Environment (e.g., production, staging)"
   type        = string

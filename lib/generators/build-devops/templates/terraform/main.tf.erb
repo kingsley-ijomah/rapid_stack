@@ -83,18 +83,6 @@ module "update_config" {
   depends_on = [module.floating_ips]
 }
 
-# module "github_secrets" {
-#   source = "./modules/github_secrets"
-  
-#   repositories = var.repositories
-#   bucket_details = module.spaces.bucket_details
-#   droplet_ip = module.floating_ips.floating_ip_details["manager1"].floating_ip
-#   ssh_private_key_path = var.ssh_key
-#   github_username = var.github_username
-#   repo_access_token = var.repo_access_token
-#   app_name = var.app_name
-# }
-
 # module "vault_secrets" {
 #   source = "./modules/vault_secrets"
 

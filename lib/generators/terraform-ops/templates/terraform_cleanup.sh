@@ -7,42 +7,6 @@ show_usage() {
     exit 1
 }
 
-# Function to read repositories from config
-get_repositories() {
-    local file="$1"
-    # Extract all repository values from the repos section
-    sed -n '/^repos:/,/^[a-z]/p' "$file" | grep "^  " | cut -d':' -f2 | tr -d ' "' | tr '\n' ',' | sed 's/,$//'
-}
-
-# Function to delete GitHub repositories
-delete_github_repos() {
-    local username="$1"
-    local token="$2"
-    local repos="$3"
-    
-    echo "🗑️  Deleting GitHub repositories..." > /dev/tty
-    
-    # Convert comma-separated list to array
-    IFS=',' read -ra REPO_ARRAY <<< "$repos"
-    
-    for repo in "${REPO_ARRAY[@]}"; do
-        # Trim whitespace
-        repo=$(echo "$repo" | xargs)
-        
-        # Delete repository using GitHub API
-        response=$(curl -s -X DELETE \
-            -H "Authorization: token $token" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/$username/$repo")
-        
-        if [ -z "$response" ]; then
-            echo "✅ Repository '$repo' deleted successfully." > /dev/tty
-        else
-            echo "❌ Failed to delete repository '$repo': $response" > /dev/tty
-        fi
-    done
-}
-
 # Parse command line arguments
 app_name=""
 while [[ $# -gt 0 ]]; do
@@ -79,23 +43,17 @@ if [ -f "$config_file" ]; then
     # Read GitHub credentials from config
     github_username=$(grep "github_username:" "$config_file" | cut -d':' -f2 | tr -d ' "')
     repo_access_token=$(grep "repo_access_token:" "$config_file" | cut -d':' -f2 | tr -d ' "')
-    repositories=$(get_repositories "$config_file")
 
     # Ask if user wants to delete GitHub repositories
-    echo "⚠️  Warning: This will delete all associated GitHub repositories!" > /dev/tty
-    echo "Repositories to be deleted:" > /dev/tty
-    IFS=',' read -ra REPO_ARRAY <<< "$repositories"
-    for repo in "${REPO_ARRAY[@]}"; do
-        echo "  - $repo" > /dev/tty
-    done
-    echo "" > /dev/tty
-    read -p "Do you want to delete these GitHub repositories? [y/N] " response
+    echo "⚠️  Warning: This will clean up all infrastructure resources!" > /dev/tty
+    read -p "Do you want to proceed with cleanup? [y/N] " response
     response=${response:-N}
     
     if [[ $response =~ ^[Yy]$ ]]; then
-        delete_github_repos "$github_username" "$repo_access_token" "$repositories"
+        echo "✅ Proceeding with cleanup..." > /dev/tty
     else
-        echo "⚠️  Skipping GitHub repository deletion" > /dev/tty
+        echo "⚠️  Skipping cleanup" > /dev/tty
+        exit 0
     fi
 
     # Ask if user wants to destroy infrastructure

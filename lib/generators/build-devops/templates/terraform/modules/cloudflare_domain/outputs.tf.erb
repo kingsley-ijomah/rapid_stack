@@ -1,4 +1,8 @@
 output "nameservers" {
-  description = "Cloudflare nameservers for each domain"
-  value       = { for domain, zone in cloudflare_zone.domains : domain => zone.name_servers }
-} 
+  description = "Information about the CNAME record needed for Cloudflare Pages"
+  value = {
+    domain = local.www_domain
+    cname_target = "${cloudflare_pages_project.frontend.name}.pages.dev"
+    instructions = "Add a CNAME record in your DNS settings pointing ${local.www_domain} to ${cloudflare_pages_project.frontend.name}.pages.dev"
+  }
+}

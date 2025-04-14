@@ -1,38 +1,5 @@
 #!/bin/bash
 
-# Function to create GitHub repositories
-create_github_repos() {
-    local username="$1"
-    local token="$2"
-    local repos="$3"
-    local is_public="$4"
-    
-    echo "Creating GitHub repositories..." > /dev/tty
-    
-    # Convert comma-separated list to array
-    IFS=',' read -ra REPO_ARRAY <<< "$repos"
-    
-    for repo in "${REPO_ARRAY[@]}"; do
-        # Trim whitespace
-        repo=$(echo "$repo" | xargs)
-        
-        # Create repository using GitHub API
-        response=$(curl -s -X POST \
-            -H "Authorization: token $token" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/user/repos" \
-            -d "{\"name\":\"$repo\",\"private\":$is_public}")
-        
-        if echo "$response" | grep -q "already exists"; then
-            echo "Repository '$repo' already exists." > /dev/tty
-        elif echo "$response" | grep -q "created_at"; then
-            echo "Repository '$repo' created successfully." > /dev/tty
-        else
-            echo "Failed to create repository '$repo': $response" > /dev/tty
-        fi
-    done
-}
-
 # Function to check DigitalOcean domain permissions
 check_domain_permissions() {
     local token="$1"
@@ -85,13 +52,6 @@ get_yaml_value() {
         # Read from root level
         grep "^$key:" "$file" | cut -d':' -f2 | tr -d ' "'
     fi
-}
-
-# Function to read repositories from config
-get_repositories() {
-    local file="$1"
-    # Extract all repository values from the repos section
-    sed -n '/^repos:/,/^[a-z]/p' "$file" | grep "^  " | cut -d':' -f2 | tr -d ' "' | tr '\n' ',' | sed 's/,$//'
 }
 
 # Function to generate SSH key if it doesn't exist
@@ -187,22 +147,6 @@ dockerhub_password=$(get_yaml_value "$CONFIG_FILE" "dockerhub_password" "config"
 cloudflare_api_key=$(get_yaml_value "$CONFIG_FILE" "cloudflare_api_key" "config")
 cloudflare_account_id=$(get_yaml_value "$CONFIG_FILE" "cloudflare_account_id" "config")
 
-# Get repositories from config
-repositories=$(get_repositories "$CONFIG_FILE")
-
-# Ask if user wants to create GitHub repositories
-if prompt_yes_no "Do you want to create GitHub repositories?" "yes"; then
-    # Ask if repositories should be public
-    if prompt_yes_no "Do you want the repositories to be public?" "no"; then
-        is_public="true"
-    else
-        is_public="false"
-    fi
-    
-    # Create repositories
-    create_github_repos "$github_username" "$repo_access_token" "$repositories" "$is_public"
-fi
-
 # Ask if user wants to generate SSH key
 if prompt_yes_no "Do you want to generate a new SSH key?" "yes"; then
     # Generate SSH key and get the path
@@ -257,7 +201,6 @@ spaces_secret_key = "${spaces_secret_key}"
 github_username = "${github_username}"
 repo_access_token = "${repo_access_token}"
 domains = [$(echo $domains | sed 's/,/","/g' | sed 's/.*/"&"/')]
-repositories = [$(echo $repositories | sed 's/,/","/g' | sed 's/.*/"&"/')]
 ssh_key = "${ssh_key}"
 ssh_fingerprint = "${ssh_fingerprint}"
 app_support_email = "${app_support_email}"

@@ -12,39 +12,44 @@ locals {
   root_domains = distinct([for domain in var.domains : 
     replace(domain, "www.", "")
   ])
+  
+  # Find or create a www-prefixed domain
+  www_domain = [for domain in var.domains : 
+    startswith(domain, "www.") ? domain : "www.${domain}"
+  ][0]
 }
 
-# Create zones for each domain
-resource "cloudflare_zone" "domains" {
-  for_each    = toset(local.root_domains)
-  account_id  = var.account_id
-  zone        = each.value
-  plan        = "free"
-}
+# # Create zones for each domain
+# resource "cloudflare_zone" "domains" {
+#   for_each    = toset(local.root_domains)
+#   account_id  = var.account_id
+#   zone        = each.value
+#   plan        = "free"
+# }
 
-# Create A records for each domain
-resource "cloudflare_record" "root_records" {
-  for_each = cloudflare_zone.domains
-  zone_id  = each.value.id
-  name     = "@"
-  content  = var.target_ip
-  type     = "A"
-  proxied  = true
-}
+# # Create A records for each domain
+# resource "cloudflare_record" "root_records" {
+#   for_each = cloudflare_zone.domains
+#   zone_id  = each.value.id
+#   name     = "@"
+#   content  = var.target_ip
+#   type     = "A"
+#   proxied  = true
+# }
 
-resource "cloudflare_record" "www_records" {
-  for_each = cloudflare_zone.domains
-  zone_id  = each.value.id
-  name     = "www"
-  content  = var.target_ip
-  type     = "A"
-  proxied  = true
-}
+# resource "cloudflare_record" "www_records" {
+#   for_each = cloudflare_zone.domains
+#   zone_id  = each.value.id
+#   name     = "www"
+#   content  = var.target_ip
+#   type     = "A"
+#   proxied  = true
+# }
 
 # Create Cloudflare Pages project
 resource "cloudflare_pages_project" "frontend" {
   account_id = var.account_id
-  name       = "${var.app_name}-frontend"
+  name       = "${var.app_name}"
   production_branch = "main"
 }
 
@@ -52,5 +57,5 @@ resource "cloudflare_pages_project" "frontend" {
 resource "cloudflare_pages_domain" "frontend_domain" {
   account_id   = var.account_id
   project_name = cloudflare_pages_project.frontend.name
-  domain       = var.domains[0]  # Using the first domain from the list
+  domain       = local.www_domain
 } 
