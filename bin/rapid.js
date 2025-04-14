@@ -62,6 +62,7 @@ if (!command) {
   
   console.error('\nDevelopment Commands:');
   console.error(' serve, s - Start frontend and backend servers');
+  console.error(' destroy - Destroy all project resources (cloud, git, local)');
   
   console.error('\nOptions:');
   console.error(' --yes, -y - Automatically answer "yes" to all prompts');
@@ -109,7 +110,8 @@ const generatorMap = {
   
   // Development Commands
   'serve': '../lib/generators/serve',
-  's': '../lib/generators/serve'
+  's': '../lib/generators/serve',
+  'destroy': '../lib/generators/destroy'
 };
 
 const generatorPath = generatorMap[command];
