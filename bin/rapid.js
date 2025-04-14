@@ -60,6 +60,9 @@ if (!command) {
   console.error(' backend:auth - Add authentication');
   console.error(' backend:auth:rm - Remove backend authentication');
   
+  console.error('\nDevelopment Commands:');
+  console.error(' serve, s - Start frontend and backend servers');
+  
   console.error('\nOptions:');
   console.error(' --yes, -y - Automatically answer "yes" to all prompts');
   console.error(' --auth-only - Only add authentication');
@@ -102,7 +105,11 @@ const generatorMap = {
   
   // Initialization
   'init': '../lib/generators/init',
-  'run:devops': '../lib/generators/terraform-ops'
+  'run:devops': '../lib/generators/terraform-ops',
+  
+  // Development Commands
+  'serve': '../lib/generators/serve',
+  's': '../lib/generators/serve'
 };
 
 const generatorPath = generatorMap[command];
