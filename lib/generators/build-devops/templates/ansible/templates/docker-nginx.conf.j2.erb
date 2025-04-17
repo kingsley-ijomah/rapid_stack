@@ -4,7 +4,7 @@ upstream backend {
 
 server {
     listen 80;
-    server_name localhost;
+    server_name api.*;
 
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
@@ -14,6 +14,9 @@ server {
     add_header X-XSS-Protection "1; mode=block";
     add_header X-Content-Type-Options "nosniff";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
+    add_header Access-Control-Allow-Origin "*";
+    add_header Access-Control-Allow-Methods "GET, POST, OPTIONS";
+    add_header Access-Control-Allow-Headers "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization";
 
     # Proxy headers
     proxy_http_version 1.1;
@@ -27,24 +30,29 @@ server {
     proxy_set_header Connection "upgrade";
 
     # Health check endpoint
-    location = / {
+    location = /health {
         return 200 'healthy\n';
         add_header Content-Type text/plain;
-    }
-
-    # API endpoints
-    location /api {
-        rewrite ^/api/(.*) /$1 break;
-        proxy_pass http://backend;
     }
 
     # GraphQL endpoint
     location /graphql {
         proxy_pass http://backend;
+        
+        # Handle preflight requests
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' '*';
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+            add_header 'Access-Control-Max-Age' 1728000;
+            add_header 'Content-Type' 'text/plain; charset=utf-8';
+            add_header 'Content-Length' 0;
+            return 204;
+        }
     }
 
     # Deny access to . files
     location ~ /\. {
         deny all;
     }
-} 
+}

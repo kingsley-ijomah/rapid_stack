@@ -1,8 +1,19 @@
 output "nameservers" {
-  description = "Information about the CNAME record needed for Cloudflare Pages"
+  description = "Cloudflare nameservers for DNS configuration"
   value = {
-    domain = local.www_domain
-    cname_target = "${cloudflare_pages_project.frontend.name}.pages.dev"
-    instructions = "Add a CNAME record in your DNS settings pointing ${local.www_domain} to ${cloudflare_pages_project.frontend.name}.pages.dev"
+    for domain, zone in cloudflare_zone.domains : domain => {
+      nameservers = zone.name_servers
+      instructions = "Update your domain registrar's nameservers to use these Cloudflare nameservers"
+    }
+  }
+}
+
+output "api_domain" {
+  description = "API domain configuration"
+  value = {
+    for domain, zone in cloudflare_zone.domains : domain => {
+      api_domain = "api.${domain}"
+      target_ip = var.target_ip
+    }
   }
 }
