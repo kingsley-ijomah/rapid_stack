@@ -1,3 +1,23 @@
+## [1.1.0] - 2025-04-17
+### Feat
+- Ability to destroy rapid stack with rapid destroy
+- ability to start front and backend with rapid s or rapid serve
+- bun build:devops before run:devops
+- build git repo when devops is generated
+- Devops teardown now includes repo delete
+- Building fullstack now includes devops
+- Adding custom domain to pages
+- Create cloudflare pages project
+- rapid build:backend sets up git secrets and deploys with ci/cd
+- Running build:backend will create git secrets and push up initial git
+- running build:terraform sets up nginx with custom html
+
+### Fix
+- Fix issue of generating frontend-frontend as repository
+- Change from cloudflare workers to pages
+- Making nginx, backend and mongo healthy
+- Fixed issue with missing graphql types
+
 ## [1.0.9] - 2025-04-09
 ### Feat
 - Added check for version with rapid --version or rapid -v
