@@ -1,3 +1,14 @@
+## [1.1.1] - 2025-04-18
+### Feat
+- Adding android build with command rapid android
+- Build ios app using rapid ios command
+
+### Fix
+- check rapid ios against Xcode installation
+
+### Change
+- ignore ios and android folders
+
 ## [1.1.0] - 2025-04-17
 ### Feat
 - Ability to destroy rapid stack with rapid destroy
