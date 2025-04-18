@@ -66,6 +66,7 @@ if (!command) {
 
   console.error('\nMobile Commands:');
   console.error(' ios - Build iOS app');
+  console.error(' android - Build Android app');
   
   console.error('\nOptions:');
   console.error(' --yes, -y - Automatically answer "yes" to all prompts');
@@ -118,6 +119,7 @@ const generatorMap = {
 
   // mobile commands
   'ios': '../lib/generators/ios',
+  'android': '../lib/generators/android',
 };
 
 const generatorPath = generatorMap[command];
