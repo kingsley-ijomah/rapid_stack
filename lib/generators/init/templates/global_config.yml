@@ -1,6 +1,15 @@
+# Global Configuration - Shared across all Rapid Stack projects
+# These values can be overridden on a per-project basis by setting them in the project's .rapidrc file
+# For example, to override the email for a specific project, add to .rapidrc:
+# {
+#   "projectName": "my-project",
+#   "config": {
+#     "email": "project-specific@email.com"
+#   }
+# }
+
 # Project Configuration
 config:
-  ########### Required for Development ###########
   # Cloudflare API Key - Get at: https://dash.cloudflare.com/profile/api-tokens
   # Account   - Account Settings       (Read)
   # Account   - Workers Pipelines      (Edit)
@@ -25,10 +34,6 @@ config:
   github_username: ""
   # GitHub personal access token - Generate at: https://github.com/settings/tokens
   repo_access_token: ""
-  ########### End Required for Development ###########
-  ####################################################
-  # Application name - Used for naming resources and services
-  app_name: <%= app_name %>
   # DigitalOcean API token - Generate at: https://cloud.digitalocean.com/account/api/tokens
   do_token: ""
   # DigitalOcean region (e.g., lon1, nyc1, sgp1)
@@ -37,12 +42,6 @@ config:
   space_region: "fra1"
   # Your email address
   email: ""
-  # Application support email (e.g., support@example.com)
-  app_support_email: "info@<%= app_name %>.com"
-  # Mailer from name (e.g., Emeka Smith)
-  mailer_from_name: ""
-  # Mailer from address (e.g., info@example.com)
-  mailer_from_address: "info@<%= app_name %>.com"
   # Spaces access ID - Generate at: https://cloud.digitalocean.com/spaces/access_keys
   spaces_access_id: ""
   # Spaces secret key - Generate at: https://cloud.digitalocean.com/spaces/access_keys
@@ -53,7 +52,3 @@ config:
   dockerhub_username: ""
   # Docker Hub password - https://hub.docker.com/
   dockerhub_password: ""
-  # Domains (comma-separated) - e.g., example.com,www.example.com
-  domains: "<%= app_name %>.com,www.<%= app_name %>.com"
-  # remote machine e.g: DO droplet
-  remote_machine: ""
