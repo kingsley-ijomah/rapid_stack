@@ -14,7 +14,7 @@ data "external" "project_name" {
 resource "null_resource" "update_config" {
   provisioner "local-exec" {
     command = <<-EOT
-      CONFIG_PATH="$HOME/.rapid_stack/${data.external.project_name.result.project_name}_project.yml"
+      CONFIG_PATH="$HOME/.rapid_stack/config.yml"
       if [ ! -f "$CONFIG_PATH" ]; then
         echo "Config file not found at: $CONFIG_PATH" >&2
         exit 1

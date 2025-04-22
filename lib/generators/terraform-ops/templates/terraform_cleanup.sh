@@ -32,7 +32,7 @@ if [ -z "$app_name" ]; then
 fi
 
 # Construct config file path
-config_file="$HOME/.rapid_stack/${app_name}_project.yml"
+config_file="$HOME/.rapid_stack/config.yml"
 
 echo "🧹 Starting cleanup process..." > /dev/tty
 
@@ -96,7 +96,7 @@ if [ -f "$config_file" ]; then
     fi
 else
     echo "ℹ️  Configuration file not found at: $config_file" > /dev/tty
-    echo "ℹ️  Expected file: ${app_name}_project.yml" > /dev/tty
+    echo "ℹ️  Expected file: config.yml" > /dev/tty
     exit 1
 fi
 
