@@ -1,3 +1,20 @@
+## [1.1.2] - 2025-04-23
+### Feat
+- remove deployment with rapid build:deploy --rm
+- deploy ci.yml for frontend and backend
+- build:deploy can now push frontend
+- build:deploy can deploy backend
+- Ability to add config to .rapidrc or use global in .rapid_stack/config.yml
+
+### Fix
+- running --rm should clean git locally too
+- Fixed syntax errors
+
+### Change
+- made it possible to run locally without all config field required
+- Created a global config file used in ~/.rapid_stack/config.yml
+- Improved error message around missing config fields
+
 ## [1.1.1] - 2025-04-18
 ### Feat
 - Adding android build with command rapid android
