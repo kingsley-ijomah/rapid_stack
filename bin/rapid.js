@@ -38,6 +38,7 @@ if (!command) {
   console.error(' build:devops - Build devops infrastructure');
   console.error(' build:lifecycle - Build development lifecycle');
   console.error(' build:fullstack - Build fullstack application');
+  console.error(' build:deploy - Deploy application to cloud');
   
   console.error('\nSchema Commands:');
   console.error(' schema:create - Create backend schema');
@@ -83,7 +84,7 @@ const generatorMap = {
   'build:devops': '../lib/generators/build-devops',
   'build:lifecycle': '../lib/generators/dev-lifecycle',
   'build:fullstack': '../lib/generators/build-fullstack',
-  
+  'build:deploy': '../lib/generators/build-deploy',
   // Schema Commands
   'schema:create': '../lib/generators/backend-schema',
   'schema:run': '../lib/generators/backend-schema-runner',
