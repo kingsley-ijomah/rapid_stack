@@ -7,10 +7,6 @@ terraform {
   }
 }
 
-data "external" "project_name" {
-  program = ["sh", "-c", "echo 'Starting script...' >&2; RAPIDRC_PATH=$(find ../.. -name '.rapidrc' | head -n 1); echo 'Found .rapidrc at: $RAPIDRC_PATH' >&2; if [ -z \"$RAPIDRC_PATH\" ]; then echo '{\"error\":\"Could not find .rapidrc file\"}' >&2; exit 1; fi; PROJECT_NAME=$(jq -r '.projectName' \"$RAPIDRC_PATH\"); echo 'Project name: $PROJECT_NAME' >&2; if [ -z \"$PROJECT_NAME\" ]; then echo '{\"error\":\"Could not find project name in .rapidrc\"}' >&2; exit 1; fi; echo \"{\\\"project_name\\\":\\\"$PROJECT_NAME\\\"}\""]
-}
-
 resource "null_resource" "update_config" {
   provisioner "local-exec" {
     command = <<-EOT
@@ -26,4 +22,4 @@ resource "null_resource" "update_config" {
     EOT
     interpreter = ["/bin/bash", "-c"]
   }
-} 
+}

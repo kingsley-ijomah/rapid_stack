@@ -40,7 +40,7 @@ echo "🚀 Terraform Setup Script" > /dev/tty
 echo "This script will help you configure your terraform.tfvars file" > /dev/tty
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" > /dev/tty
 
-# Function to read YAML value
+# Function to read YAML value from a file
 get_yaml_value() {
     local file="$1"
     local key="$2"
@@ -53,6 +53,100 @@ get_yaml_value() {
         grep "^$key:" "$file" | cut -d':' -f2 | tr -d ' "'
     fi
 }
+
+# Function to get value from either config file, with project config taking precedence
+get_config_value() {
+    local global_file="$1"
+    local project_file="$2"
+    local key="$3"
+    local section="$4"
+    
+    # Try to get value from project config first
+    local project_value=$(get_yaml_value "$project_file" "$key" "$section")
+    if [ -n "$project_value" ]; then
+        echo "$project_value"
+        return
+    fi
+    
+    # If not found in project config, try global config
+    local global_value=$(get_yaml_value "$global_file" "$key" "$section")
+    if [ -n "$global_value" ]; then
+        echo "$global_value"
+        return
+    fi
+    
+    # If not found in either, return empty
+    echo ""
+}
+
+# Function to prompt for yes/no with default
+prompt_yes_no() {
+    local prompt="$1"
+    local default="$2"
+    local response
+
+    if [ "$default" = "yes" ]; then
+        read -p "$prompt [Y/n] " response
+        response=${response:-Y}
+    else
+        read -p "$prompt [y/N] " response
+        response=${response:-N}
+    fi
+
+    case "$response" in
+        [yY][eE][sS]|[yY]) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# Parse command line arguments
+GLOBAL_CONFIG_FILE=""
+PROJECT_CONFIG_FILE=""
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --global-config) GLOBAL_CONFIG_FILE="$2"; shift ;;
+        --project-config) PROJECT_CONFIG_FILE="$2"; shift ;;
+        *) echo "Unknown parameter: $1" > /dev/tty; exit 1 ;;
+    esac
+    shift
+done
+
+# Check if config files exist
+if [ -z "$GLOBAL_CONFIG_FILE" ] || [ ! -f "$GLOBAL_CONFIG_FILE" ]; then
+    echo "❌ Error: Global configuration file not found" > /dev/tty
+    exit 1
+fi
+
+if [ -z "$PROJECT_CONFIG_FILE" ] || [ ! -f "$PROJECT_CONFIG_FILE" ]; then
+    echo "❌ Error: Project configuration file not found" > /dev/tty
+    exit 1
+fi
+
+# Create terraform directory if it doesn't exist
+mkdir -p DevOps/terraform
+
+# Clear or create terraform.tfvars
+> DevOps/terraform/terraform.tfvars
+
+# Read values from both config files
+app_name=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "app_name" "config")
+do_token=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "do_token" "config")
+do_region=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "do_region" "config")
+space_region=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "space_region" "config")
+email=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "email" "config")
+spaces_access_id=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "spaces_access_id" "config")
+spaces_secret_key=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "spaces_secret_key" "config")
+github_username=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "github_username" "config")
+repo_access_token=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "repo_access_token" "config")
+domains=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "domains" "config")
+app_support_email=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "app_support_email" "config")
+mailer_from_name=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "mailer_from_name" "config")
+mailer_from_address=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "mailer_from_address" "config")
+postmark_api_key=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "postmark_api_key" "config")
+dockerhub_username=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "dockerhub_username" "config")
+dockerhub_password=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "dockerhub_password" "config")
+cloudflare_api_key=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "cloudflare_api_key" "config")
+cloudflare_account_id=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "cloudflare_account_id" "config")
 
 # Function to generate SSH key if it doesn't exist
 generate_ssh_key() {
@@ -84,68 +178,6 @@ generate_ssh_key() {
         exit 1
     fi
 }
-
-# Function to prompt for yes/no with default
-prompt_yes_no() {
-    local prompt="$1"
-    local default="$2"
-    local response
-
-    if [ "$default" = "yes" ]; then
-        read -p "$prompt [Y/n] " response
-        response=${response:-Y}
-    else
-        read -p "$prompt [y/N] " response
-        response=${response:-N}
-    fi
-
-    case "$response" in
-        [yY][eE][sS]|[yY]) return 0 ;;
-        *) return 1 ;;
-    esac
-}
-
-# Parse command line arguments
-CONFIG_FILE=""
-while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        --config) CONFIG_FILE="$2"; shift ;;
-        *) echo "Unknown parameter: $1" > /dev/tty; exit 1 ;;
-    esac
-    shift
-done
-
-# Check if config file exists
-if [ -z "$CONFIG_FILE" ] || [ ! -f "$CONFIG_FILE" ]; then
-    echo "❌ Error: Configuration file not found" > /dev/tty
-    exit 1
-fi
-
-# Create terraform directory if it doesn't exist
-mkdir -p DevOps/terraform
-
-# Clear or create terraform.tfvars
-> DevOps/terraform/terraform.tfvars
-
-# Read values from config file
-app_name=$(get_yaml_value "$CONFIG_FILE" "app_name" "config")
-do_token=$(get_yaml_value "$CONFIG_FILE" "do_token" "config")
-do_region=$(get_yaml_value "$CONFIG_FILE" "do_region" "config")
-space_region=$(get_yaml_value "$CONFIG_FILE" "space_region" "config")
-email=$(get_yaml_value "$CONFIG_FILE" "email" "config")
-spaces_access_id=$(get_yaml_value "$CONFIG_FILE" "spaces_access_id" "config")
-spaces_secret_key=$(get_yaml_value "$CONFIG_FILE" "spaces_secret_key" "config")
-github_username=$(get_yaml_value "$CONFIG_FILE" "github_username" "config")
-repo_access_token=$(get_yaml_value "$CONFIG_FILE" "repo_access_token" "config")
-domains=$(get_yaml_value "$CONFIG_FILE" "domains" "config")
-app_support_email=$(get_yaml_value "$CONFIG_FILE" "app_support_email" "config")
-mailer_from_name=$(get_yaml_value "$CONFIG_FILE" "mailer_from_name" "config")
-mailer_from_address=$(get_yaml_value "$CONFIG_FILE" "mailer_from_address" "config")
-postmark_api_key=$(get_yaml_value "$CONFIG_FILE" "postmark_api_key" "config")
-dockerhub_username=$(get_yaml_value "$CONFIG_FILE" "dockerhub_username" "config")
-dockerhub_password=$(get_yaml_value "$CONFIG_FILE" "dockerhub_password" "config")
-cloudflare_api_key=$(get_yaml_value "$CONFIG_FILE" "cloudflare_api_key" "config")
-cloudflare_account_id=$(get_yaml_value "$CONFIG_FILE" "cloudflare_account_id" "config")
 
 # Ask if user wants to generate SSH key
 if prompt_yes_no "Do you want to generate a new SSH key?" "yes"; then
