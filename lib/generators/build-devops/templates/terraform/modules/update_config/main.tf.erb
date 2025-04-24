@@ -8,17 +8,36 @@ terraform {
 }
 
 resource "null_resource" "update_config" {
+  triggers = {
+    always_run = timestamp()
+  }
+
   provisioner "local-exec" {
     command = <<-EOT
-      CONFIG_PATH="$HOME/.rapid_stack/config.yml"
+      echo "Starting update_config script..." >&2
+      echo "Current directory: $(pwd)" >&2
+      echo "Looking for .rapidrc file..." >&2
+      
+      # Look for .rapidrc in the parent directory (project root)
+      CONFIG_PATH="../../.rapidrc"
       if [ ! -f "$CONFIG_PATH" ]; then
-        echo "Config file not found at: $CONFIG_PATH" >&2
+        echo "ERROR: Config file not found at: $CONFIG_PATH" >&2
+        echo "Directory contents:" >&2
+        ls -la ../../ >&2
         exit 1
       fi
       
-      # Use sed to update the remote_machine field
-      sed -i '' "s/remote_machine:.*/remote_machine: ${var.floating_ip}/" "$CONFIG_PATH"
-      echo "Updated remote_machine in config file with IP: ${var.floating_ip}" >&2
+      echo "Found .rapidrc file. Current content:" >&2
+      cat "$CONFIG_PATH" >&2
+      
+      echo "Attempting to update remote_machine with IP: ${var.floating_ip}" >&2
+      # Use sed to update the remote_machine field in .rapidrc format
+      sed -i '' "s/^  remote_machine:.*/  remote_machine: ${var.floating_ip}/" "$CONFIG_PATH"
+      
+      echo "Update complete. New content:" >&2
+      cat "$CONFIG_PATH" >&2
+      
+      echo "Updated remote_machine in .rapidrc with IP: ${var.floating_ip}" >&2
     EOT
     interpreter = ["/bin/bash", "-c"]
   }
