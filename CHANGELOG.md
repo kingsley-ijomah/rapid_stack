@@ -1,3 +1,11 @@
+## [1.1.3] - 2025-04-24
+### Fix
+- Issue was remote machine ip not updated
+- get config data from local and global config files
+
+### Change
+- adding --rm to run:devops
+
 ## [1.1.2] - 2025-04-23
 ### Feat
 - remove deployment with rapid build:deploy --rm
