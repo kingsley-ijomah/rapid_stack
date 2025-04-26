@@ -12,6 +12,70 @@ if (command === '--version' || command === '-v') {
   process.exit(0);
 }
 
+// Check for list command
+if (command === 'list') {
+  console.log('\nAvailable Generators:');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  
+  // Group commands by category
+  const categories = {
+    'Initialization': [
+      'init - Initialize a new project',
+      'run:devops - Run devops pipeline'
+    ],
+    'Build Commands': [
+      'build:backend - Build backend infrastructure',
+      'build:frontend - Build frontend infrastructure',
+      'build:devops - Build devops infrastructure',
+      'build:lifecycle - Build development lifecycle',
+      'build:fullstack - Build fullstack application',
+      'build:deploy - Deploy application to cloud'
+    ],
+    'Schema Commands': [
+      'schema:create - Create backend schema',
+      'schema:run - Run backend schema',
+      'schema:rm - Remove backend schema'
+    ],
+    'Frontend Commands': [
+      'frontend:platform - Add frontend platform',
+      'frontend:crud - Add CRUD operations',
+      'frontend:auth - Add authentication',
+      'frontend:event - Add event handling',
+      'frontend:list - Add list actions',
+      'frontend:home - Add home page',
+      'frontend:company - Add company page',
+      'frontend:platform:rm - Remove frontend platform',
+      'frontend:auth:rm - Remove frontend authentication'
+    ],
+    'Backend Commands': [
+      'backend:graphql - Add GraphQL support',
+      'backend:auth - Add authentication',
+      'backend:auth:rm - Remove backend authentication'
+    ],
+    'Development Commands': [
+      'serve, s - Start frontend and backend servers',
+      'destroy - Destroy all project resources (cloud, git, local)'
+    ],
+    'Mobile Commands': [
+      'ios - Build iOS app',
+      'android - Build Android app'
+    ]
+  };
+
+  // Print each category and its commands
+  for (const [category, commands] of Object.entries(categories)) {
+    console.log(`\n${category}:`);
+    commands.forEach(cmd => console.log(`  ${cmd}`));
+  }
+
+  console.log('\nOptions:');
+  console.log('  --yes, -y - Automatically answer "yes" to all prompts');
+  console.log('  --auth-only - Only add authentication');
+  console.log('  --version, -v - Show version number');
+  console.log('  --rm - Remove resources (where applicable)');
+  process.exit(0);
+}
+
 // Parse command line options
 const options = {};
 let remainingArgs = [];
