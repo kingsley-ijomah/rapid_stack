@@ -50,7 +50,8 @@ if (command === 'list') {
     'Backend Commands': [
       'backend:graphql - Add GraphQL support',
       'backend:auth - Add authentication',
-      'backend:auth:rm - Remove backend authentication'
+      'backend:auth:rm - Remove backend authentication',
+      'backend:external-api - Add external API integration'
     ],
     'Development Commands': [
       'serve, s - Start frontend and backend servers',
@@ -124,6 +125,7 @@ if (!command) {
   console.error(' backend:graphql - Add GraphQL support');
   console.error(' backend:auth - Add authentication');
   console.error(' backend:auth:rm - Remove backend authentication');
+  console.error(' backend:external-api - Add external API integration');
   
   console.error('\nDevelopment Commands:');
   console.error(' serve, s - Start frontend and backend servers');
@@ -168,6 +170,7 @@ const generatorMap = {
   // Backend Commands
   'backend:auth': '../lib/generators/backend-auth',
   'backend:auth:rm': '../lib/generators/remove-backend-auth',
+  'backend:external-api': '../lib/generators/backend-external-api',
   
   // GraphQL Commands
   'graphql': '../lib/generators/graphql',
