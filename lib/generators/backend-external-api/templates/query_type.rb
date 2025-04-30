@@ -1,1 +1,1 @@
-field :<%= camelCaseName %>, resolver: Queries::<%= pascalCaseName %>Queries::<%= pascalCaseName %>
+field :<%= camelCaseName %>, resolver: Queries::<%= pascalCaseName %>::<%= pascalCaseName %>
