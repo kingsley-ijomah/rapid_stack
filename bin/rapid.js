@@ -21,7 +21,8 @@ if (command === 'list') {
   const categories = {
     'Initialization': [
       'init - Initialize a new project',
-      'run:devops - Run devops pipeline'
+      'run:devops - Run devops pipeline',
+      'run:devops-static - Run static devops pipeline'
     ],
     'Build Commands': [
       'build:backend - Build backend infrastructure',
@@ -97,6 +98,7 @@ if (!command) {
   console.error('\nInitialization:');
   console.error(' init - Initialize a new project');
   console.error(' run:devops - Run devops pipeline');
+  console.error(' run:devops-static - Run static devops pipeline');
   
   console.error('\nBuild Commands:');
   console.error(' build:backend - Build backend infrastructure');
@@ -154,6 +156,7 @@ const generatorMap = {
   'build:fullstack': '../lib/generators/build-fullstack',
   'build:deploy': '../lib/generators/build-deploy',
   'build:static': '../lib/generators/build-static',
+  'build:static-devops': '../lib/generators/build-static-devops',
   // Schema Commands
   'schema:create': '../lib/generators/backend-schema',
   'schema:run': '../lib/generators/backend-schema-runner',
@@ -181,7 +184,8 @@ const generatorMap = {
   
   // Initialization
   'init': '../lib/generators/init',
-  'run:devops': '../lib/generators/terraform-ops',
+  'run:devops': '../lib/generators/run-fullstack-devops',
+  'run:devops-static': '../lib/generators/run-static-devops',
   
   // Development Commands
   'serve': '../lib/generators/serve',

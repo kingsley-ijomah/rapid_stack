@@ -1,0 +1,27 @@
+terraform {
+  required_providers {
+    time = {
+      source = "hashicorp/time"
+      version = "~> 0.9.0"
+    }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
+  }
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_key
+}
+
+module "cloudflare_domain" {
+  source = "./modules/cloudflare_domain"
+  
+  domains    = var.domains
+  target_ip  = module.floating_ips.floating_ip_details["manager1"].floating_ip
+  account_id = var.cloudflare_account_id
+  app_name   = var.app_name
+
+  depends_on = [module.floating_ips]
+}

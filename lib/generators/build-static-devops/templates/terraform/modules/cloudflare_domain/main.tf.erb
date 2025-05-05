@@ -1,0 +1,75 @@
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
+  }
+}
+
+# Filter domains to ensure we only use root domains
+locals {
+  root_domains = distinct([for domain in var.domains : 
+    replace(domain, "www.", "")
+  ])
+  
+  # Find or create a www-prefixed domain
+  www_domain = [for domain in var.domains : 
+    startswith(domain, "www.") ? domain : "www.${domain}"
+  ][0]
+
+  # Cloudflare Pages project domain
+  pages_domain = "${var.app_name}.pages.dev"
+}
+
+# Create zones for each domain
+resource "cloudflare_zone" "domains" {
+  for_each    = toset(local.root_domains)
+  account_id  = var.account_id
+  zone        = each.value
+  plan        = "free"
+}
+
+# Create A record for api subdomain
+resource "cloudflare_record" "api_records" {
+  for_each = cloudflare_zone.domains
+  zone_id  = each.value.id
+  name     = "api"
+  content  = var.target_ip
+  type     = "A"
+  proxied  = true
+}
+
+# Create CNAME record for root domain (@) to point to www
+resource "cloudflare_record" "root_cname" {
+  for_each = cloudflare_zone.domains
+  zone_id  = each.value.id
+  name     = "@"
+  content  = "www.${each.value.zone}"
+  type     = "CNAME"
+  proxied  = true
+}
+
+# Create CNAME record for www to point to Cloudflare Pages
+resource "cloudflare_record" "www_cname" {
+  for_each = cloudflare_zone.domains
+  zone_id  = each.value.id
+  name     = "www"
+  content  = local.pages_domain
+  type     = "CNAME"
+  proxied  = true
+}
+
+# Create Cloudflare Pages project
+resource "cloudflare_pages_project" "frontend" {
+  account_id = var.account_id
+  name       = var.app_name
+  production_branch = "main"
+}
+
+# Add custom domain to Pages project (root domain)
+resource "cloudflare_pages_domain" "root_domain" {
+  account_id   = var.account_id
+  project_name = cloudflare_pages_project.frontend.name
+  domain       = local.www_domain
+}

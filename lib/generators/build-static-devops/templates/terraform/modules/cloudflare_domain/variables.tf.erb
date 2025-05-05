@@ -1,0 +1,19 @@
+variable "domains" {
+  description = "List of domains to manage in Cloudflare"
+  type        = list(string)
+}
+
+variable "target_ip" {
+  description = "Target IP address for the domain"
+  type        = string
+}
+
+variable "account_id" {
+  description = "Cloudflare account ID"
+  type        = string
+}
+
+variable "app_name" {
+  description = "Name of the application"
+  type        = string
+} 
