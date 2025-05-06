@@ -19,6 +19,7 @@ locals {
   ][0]
 
   # Cloudflare Pages project domain
+  # NOTE: This name is hardcoded in the wrangler.jsonc file in static-web
   pages_domain = "${var.app_name}.pages.dev"
 }
 
@@ -28,16 +29,6 @@ resource "cloudflare_zone" "domains" {
   account_id  = var.account_id
   zone        = each.value
   plan        = "free"
-}
-
-# Create A record for api subdomain
-resource "cloudflare_record" "api_records" {
-  for_each = cloudflare_zone.domains
-  zone_id  = each.value.id
-  name     = "api"
-  content  = var.target_ip
-  type     = "A"
-  proxied  = true
 }
 
 # Create CNAME record for root domain (@) to point to www

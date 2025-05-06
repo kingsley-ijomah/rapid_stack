@@ -14,3 +14,8 @@ variable "cloudflare_account_id" {
   type        = string
   sensitive   = true
 }
+
+variable "app_name" {
+  description = "Name of the application"
+  type        = string
+}

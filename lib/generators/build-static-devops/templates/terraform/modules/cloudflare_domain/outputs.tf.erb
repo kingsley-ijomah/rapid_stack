@@ -7,13 +7,3 @@ output "nameservers" {
     }
   }
 }
-
-output "api_domain" {
-  description = "API domain configuration"
-  value = {
-    for domain, zone in cloudflare_zone.domains : domain => {
-      api_domain = "api.${domain}"
-      target_ip = var.target_ip
-    }
-  }
-}

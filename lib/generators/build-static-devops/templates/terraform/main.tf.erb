@@ -17,11 +17,7 @@ provider "cloudflare" {
 
 module "cloudflare_domain" {
   source = "./modules/cloudflare_domain"
-  
   domains    = var.domains
-  target_ip  = module.floating_ips.floating_ip_details["manager1"].floating_ip
   account_id = var.cloudflare_account_id
   app_name   = var.app_name
-
-  depends_on = [module.floating_ips]
 }
