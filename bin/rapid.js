@@ -154,8 +154,8 @@ const generatorMap = {
   'build:devops': '../lib/generators/build-devops',
   'build:lifecycle': '../lib/generators/dev-lifecycle',
   'build:fullstack': '../lib/generators/build-fullstack',
-  'build:deploy': '../lib/generators/build-deploy',
-  'build:static': '../lib/generators/build-static',
+  'build:deploy': '../lib/generators/build-fullstack-deploy',
+  'build:static': '../lib/generators/build-static-web',
   'build:static-devops': '../lib/generators/build-static-devops',
   // Schema Commands
   'schema:create': '../lib/generators/backend-schema',
@@ -186,6 +186,7 @@ const generatorMap = {
   'init': '../lib/generators/init',
   'run:devops': '../lib/generators/run-fullstack-devops',
   'run:devops-static': '../lib/generators/run-static-devops',
+  'run:static-deploy': '../lib/generators/run-static-deploy',
   
   // Development Commands
   'serve': '../lib/generators/serve',
