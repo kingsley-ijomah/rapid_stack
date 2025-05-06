@@ -1,3 +1,17 @@
+## [1.1.4] - 2025-05-06
+### Feat
+- Include .github with generated static site
+- update package with build and preview script
+- deploy cloudflare for static sites
+- Generate static site with build:static
+- Remove external api with backend:external-api --rm
+- Create external api with backend:external-api
+- List available generators with rapid list
+
+### Change
+- update wrangler.jsonc.erb content
+- updated platform landing content
+
 ## [1.1.3] - 2025-04-24
 ### Fix
 - Issue was remote machine ip not updated
