@@ -19,8 +19,7 @@ locals {
   ][0]
 
   # Cloudflare Pages project domain
-  # NOTE: This name is hardcoded in the wrangler.jsonc file in static-web
-  pages_domain = "${var.app_name}-pages-dev"
+  pages_domain = "${var.app_name}.pages.dev"
 }
 
 # Create zones for each domain
