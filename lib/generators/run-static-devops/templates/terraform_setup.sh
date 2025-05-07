@@ -44,26 +44,6 @@ get_config_value() {
     echo ""
 }
 
-# Function to prompt for yes/no with default
-prompt_yes_no() {
-    local prompt="$1"
-    local default="$2"
-    local response
-
-    if [ "$default" = "yes" ]; then
-        read -p "$prompt [Y/n] " response
-        response=${response:-Y}
-    else
-        read -p "$prompt [y/N] " response
-        response=${response:-N}
-    fi
-
-    case "$response" in
-        [yY][eE][sS]|[yY]) return 0 ;;
-        *) return 1 ;;
-    esac
-}
-
 # Parse command line arguments
 GLOBAL_CONFIG_FILE=""
 PROJECT_CONFIG_FILE=""
@@ -99,36 +79,22 @@ cloudflare_api_key=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FIL
 cloudflare_account_id=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "cloudflare_account_id" "config")
 domains=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "domains" "config")
 
-# Ask if user wants to update terraform.tfvars
-if prompt_yes_no "Do you want to update terraform.tfvars with required credentials?" "yes"; then
-    # Write the captured values into terraform.tfvars without any extra prompt messages
-    cat << EOF > static-devops/terraform/terraform.tfvars
+# Write the captured values into terraform.tfvars
+cat << EOF > static-devops/terraform/terraform.tfvars
 app_name = "${app_name}"
 cloudflare_api_key = "${cloudflare_api_key}"
 cloudflare_account_id = "${cloudflare_account_id}"
 domains = [$(echo $domains | sed 's/,/","/g' | sed 's/.*/"&"/')]
 EOF
 
-    echo "✅ terraform.tfvars has been created successfully!" > /dev/tty
-    echo "📁 Location: static-devops/terraform/terraform.tfvars" > /dev/tty
-    echo "🔒 Note: This file contains sensitive information. Make sure it's git-ignored!" > /dev/tty
-else
-    echo "⚠️  Skipping terraform.tfvars update" > /dev/tty
-    echo "ℹ️  Using existing terraform.tfvars file" > /dev/tty
-fi
+echo "✅ terraform.tfvars has been created successfully!" > /dev/tty
+echo "📁 Location: static-devops/terraform/terraform.tfvars" > /dev/tty
+echo "🔒 Note: This file contains sensitive information. Make sure it's git-ignored!" > /dev/tty
 
-# Ask if user wants to run terraform init
-if prompt_yes_no "Do you want to run terraform init now?" "yes"; then
-    echo "🚀 Running terraform init..." > /dev/tty
-    terraform -chdir=static-devops/terraform init
+# Run terraform init
+echo "🚀 Running terraform init..." > /dev/tty
+terraform -chdir=static-devops/terraform init
 
-    # Ask if user wants to run terraform apply
-    if prompt_yes_no "Do you want to run terraform apply now?" "yes"; then
-        echo "🚀 Running terraform apply..." > /dev/tty
-        terraform -chdir=static-devops/terraform apply
-    else
-        echo "⚠️  Skipping terraform apply" > /dev/tty
-    fi
-else
-    echo "⚠️  Skipping terraform init" > /dev/tty
-fi
+# Run terraform apply
+echo "🚀 Running terraform apply..." > /dev/tty
+terraform -chdir=static-devops/terraform apply -auto-approve
