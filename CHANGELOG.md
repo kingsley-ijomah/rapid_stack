@@ -1,3 +1,13 @@
+## [1.1.5] - 2025-05-08
+### Feat
+- Ability to build full stack static with build:static-fullstack
+
+### Fix
+- use dot notation for project name in cloudflare
+
+### Change
+- running run:static-devops is now auto approved
+
 ## [1.1.4] - 2025-05-06
 ### Feat
 - Include .github with generated static site
