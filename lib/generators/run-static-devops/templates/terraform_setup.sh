@@ -78,6 +78,7 @@ app_name=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "app_na
 cloudflare_api_key=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "cloudflare_api_key" "config")
 cloudflare_account_id=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "cloudflare_account_id" "config")
 domains=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "domains" "config")
+dkim_key=$(get_config_value "$GLOBAL_CONFIG_FILE" "$PROJECT_CONFIG_FILE" "dkim_key" "config")
 
 # Write the captured values into terraform.tfvars
 cat << EOF > static-devops/terraform/terraform.tfvars
@@ -85,6 +86,7 @@ app_name = "${app_name}"
 cloudflare_api_key = "${cloudflare_api_key}"
 cloudflare_account_id = "${cloudflare_account_id}"
 domains = [$(echo $domains | sed 's/,/","/g' | sed 's/.*/"&"/')]
+dkim_key = "v=DKIM1; k=rsa; t=s; p=${dkim_key}"
 EOF
 
 echo "✅ terraform.tfvars has been created successfully!" > /dev/tty

@@ -164,8 +164,8 @@ async function handleGitOperations(version) {
     execSync(`git tag -a v${version} -m "Release version ${version}"`, { stdio: 'inherit' });
     
     // Push changes
-    const shouldPush = await prompt('\nPush changes to remote? [y/N]: ');
-    if (shouldPush.toLowerCase() === 'y') {
+    const shouldPush = await prompt('\nPush changes to remote? [Y/n]: ');
+    if (shouldPush.toLowerCase() !== 'n') {
       execSync('git push origin main', { stdio: 'inherit' });
       execSync(`git push origin v${version}`, { stdio: 'inherit' });
       console.log('Changes and tag pushed to remote successfully!');

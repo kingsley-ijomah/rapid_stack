@@ -17,5 +17,7 @@ config:
   mailer_from_address: "info@<%= app_name %>.com"
   # Domains (comma-separated) - e.g., example.com,www.example.com
   domains: "<%= app_name %>.com,www.<%= app_name %>.com"
+  # cryptographically prove email came from me
+  dkim_key: "<%= dkim_key %>"
   # remote machine e.g: DO droplet
   remote_machine: ""
