@@ -1,0 +1,64 @@
+# Global Configuration - Shared across all Rapid Stack projects
+# These values can be overridden on a per-project basis by setting them in the project's .rapidrc file
+# For example, to override the email for a specific project, add to .rapidrc in the root of your project:
+# {
+#   "projectName": "my-project",
+#   "config": {
+#     "email": "project-specific@email.com"
+#   }
+# }
+
+# To open this file in your vscode, use the command:
+# code ~/.rapid_stack/config.yml
+ 
+ # To open directly in your terminal, use:
+# nano ~/.rapid_stack/config.yml
+
+
+
+# Project Configuration
+config:
+  # Cloudflare API Key - Get at: https://dash.cloudflare.com/profile/api-tokens
+  # Account   - Account Settings       (Read)
+  # Account   - Workers Pipelines      (Edit)
+  # Account   - Queues                 (Edit)
+  # Account   - Vectorize              (Edit)
+  # Account   - Workers R2 Storage     (Edit)
+  # Account   - Workers Tail           (Read)
+  # Account   - Logs                   (Read)
+  # Account   - Workers KV Storage     (Edit)
+  # Acoount   - CloudFlare Pages       (Edit)
+  # User      - Memberships            (Read)
+  # User      - User Details           (Read)
+  # Zone      - Zone Settings          (Edit)
+  # Zone      - Zone                   (Edit)
+  # Zone      - Workers Routes         (Edit)
+  # Zone      - DNS                    (Edit)
+  # Account   - Resources              (All Accounts)
+  # Zone      - Resources              (All Zones)
+  
+  cloudflare_api_key: "to-be-modified-with-your-cloudflare-api-key"
+  # Cloudflare Acc Id - Get at: https://dash.cloudflare.com/id-is-here/home
+  cloudflare_account_id: "to-be-modified-with-your-cloudflare-account-id"
+  # GitHub username
+  github_username: "to-be-modified-with-your-github-username"
+  # GitHub personal access token - Generate at: https://github.com/settings/tokens
+  repo_access_token: "to-be-modified-with-your-github-token"
+  # DigitalOcean API token - Generate at: https://cloud.digitalocean.com/account/api/tokens
+  do_token: "to-be-modified-with-your-digitalocean-api-token"
+  # DigitalOcean region (e.g., lon1, nyc1, sgp1)
+  do_region: "to-be-modified-with-your-digitalocean-region"
+  # DigitalOcean Spaces region (e.g., fra1, nyc3, sgp1)
+  space_region: "to-be-modified-with-your-digitalocean-space-region"
+  # Your email address
+  email: "to-be-modified-with-your-email"
+  # Spaces access ID - Generate at: https://cloud.digitalocean.com/spaces/access_keys
+  spaces_access_id: "to-be-modified-with-your-spaces-access-id"
+  # Spaces secret key - Generate at: https://cloud.digitalocean.com/spaces/access_keys
+  spaces_secret_key: "to-be-modified-with-your-spaces-secret"
+  # Postmark API key - Get at: https://account.postmarkapp.com/api_tokens
+  postmark_api_key: "to-be-modified-with-your-postmark-api-key"
+  # Docker Hub username - https://hub.docker.com/
+  dockerhub_username: "to-be-modified-with-your-dockerhub-username"
+  # Docker Hub password - https://hub.docker.com/
+  dockerhub_password: "to-be-modified-with-your-dockerhub-password"
