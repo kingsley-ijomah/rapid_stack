@@ -1,3 +1,15 @@
+## [1.2.0] - 2025-05-29
+### Feat
+- Initialize supabase
+- Updated readme document
+- revamped static sites to use supabase without ionic
+- Adding auth and dashboard
+- Adding MX and TXT capability for cloudflare
+- Add example config file for local setup
+
+### Change
+- Adding supabase credentials
+
 ## [1.1.5] - 2025-05-08
 ### Feat
 - Ability to build full stack static with build:static-fullstack
