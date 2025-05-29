@@ -1,0 +1,80 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  private supabase: SupabaseClient;
+
+  constructor(private http: HttpClient) {
+    this.supabase = createClient(
+      environment.supabase.url,
+      environment.supabase.anonKey,
+      {
+        auth: {
+          persistSession: true,
+          storageKey: 'supabase.auth.token'
+        }
+      }
+    );
+  }
+
+  get client(): SupabaseClient {
+    return this.supabase;
+  }
+
+  async signUp(email: string, password: string, metadata?: { [key: string]: any }) {
+    return await this.supabase.auth.signUp({
+      email,
+      password,
+      options: { data: metadata }
+    });
+  }
+
+  async signIn(email: string, password: string, rememberMe: boolean = false) {
+    if (!rememberMe) {
+      window.addEventListener('beforeunload', () => {
+        this.supabase.auth.signOut();
+      });
+    }
+
+    return await this.supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+  }
+
+  async signOut() {
+    return await this.supabase.auth.signOut();
+  }
+
+  async resetPassword(email: string) {
+    return await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`
+    });
+  }
+
+  async updatePassword(newPassword: string) {
+    return await this.supabase.auth.updateUser({
+      password: newPassword
+    });
+  }
+
+  async setSession(accessToken: string, refreshToken: string) {
+    return await this.supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken
+    });
+  }
+
+  async getCurrentUser() {
+    return await this.supabase.auth.getUser();
+  }
+
+  async getSession() {
+    return await this.supabase.auth.getSession();
+  }
+}

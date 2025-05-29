@@ -1,19 +1,7 @@
 export const environment = {
   production: true,
-  appName: 'Rapid Stack',
-  supportEmail: 'support@domain.com',
-  companyInfo: {
-    year: new Date().getFullYear(),
-    website: 'domain.com',
-    socialLinks: {
-      facebook: 'https://facebook.com/domain',
-      twitter: 'https://twitter.com/domain',
-      instagram: 'https://instagram.com/domain'
-    }
-  },
-
-  backendEndpoint: 'https://api.dancingfrog.xyz/graphql',
-
-  // generated with: openssl rand -hex 32
-  encryptionKey: '<%= encryptionKey %>',
-}; 
+  supabase: {
+    url: process.env['SUPABASE_URL'] || '',
+    anonKey: process.env['SUPABASE_ANON_KEY'] || ''
+  }
+};

@@ -9,6 +9,10 @@
 config:
   # Application name - Used for naming resources and services
   app_name: <%= app_name %>
+  # Supabase url
+  supabase_url: ""
+  # Supabase anon key
+  supabase_anonkey: ""
   # Application support email (e.g., support@example.com)
   app_support_email: "info@<%= app_name %>.com"
   # Mailer from name (e.g., Emeka Smith)

@@ -11,22 +11,28 @@
 # Project Configuration
 config:
   # Cloudflare API Key - Get at: https://dash.cloudflare.com/profile/api-tokens
-  # Account   - Account Settings       (Read)
+  # The following permissions are recommended for your API token:
   # Account   - Workers Pipelines      (Edit)
-  # Account   - Queues                 (Edit) 
+  # Account   - Queues                 (Edit)
   # Account   - Vectorize              (Edit)
+  # Account   - Email Routing Addresses (Edit)
+  # Account   - Email Routing Addresses (Read)
+  # Account   - Cloudflare Pages       (Edit)
   # Account   - Workers R2 Storage     (Edit)
   # Account   - Workers Tail           (Read)
   # Account   - Logs                   (Read)
   # Account   - Workers KV Storage     (Edit)
+  # Account   - Workers Scripts        (Edit)
+  # Account   - Workers Scripts        (Read)
+  # Account   - Account Settings       (Read)
   # User      - Memberships            (Read)
   # User      - User Details           (Read)
+  # Zone      - Email Routing Rules    (Edit)
+  # Zone      - Email Routing Rules    (Read)
   # Zone      - Zone Settings          (Edit)
   # Zone      - Zone                   (Edit)
   # Zone      - Workers Routes         (Edit)
   # Zone      - DNS                    (Edit)
-  # Account   - Resources              (All Accounts)
-  # Zone      - Resources              (All Zones)
   cloudflare_api_key: ""
   # Cloudflare Acc Id - Get at: https://dash.cloudflare.com/id-is-here/home
   cloudflare_account_id: ""
