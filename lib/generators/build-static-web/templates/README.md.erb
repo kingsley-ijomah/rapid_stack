@@ -1,0 +1,154 @@
+# RapidStack Static Web Project Setup
+
+## Step 1: Open terminal and install RapidStack CLI
+```bash
+npm install -g @codehance/rapid-stack@latest
+```
+Verify installation:
+```bash
+rapid -v
+```
+
+## Step 2: Open terminal and navigate to your project folder
+```bash
+cd Desktop
+```
+
+## Step 3: Create project
+Run the command below to create your project:
+```bash
+rapid init
+```
+When prompted, enter your project name, then:
+```bash
+cd project-name
+```
+
+## Step 4: Open in Cursor
+```bash
+cursor .
+```
+
+## Step 5: Verify Configurations
+
+1. Check local config (.rapidrc):
+   - This is the only file in cursor
+   - Verify content is correct
+
+2. Check global config:
+   ```bash
+   cursor ~/.rapid_stack/config.yml
+   ```
+
+## Step 6: Required Accounts
+Make sure you have created these accounts:
+- [ ] GitHub: https://github.com/
+- [ ] Cloudflare: https://cloudflare.com/
+- [ ] Namecheap: https://namecheap.com/
+- [ ] Supabase: https://supabase.com/
+
+## Step 7: Get API Keys and Credentials
+
+1. **Cloudflare Credentials**
+   - Log in to Cloudflare dashboard
+   - Go to "My Profile" > "API Tokens"
+   - Click "Create Token"
+   - Select "Create Custom Token"
+   - Name it "Your Project Name"
+   - Click "Create Token"
+   - Add these permissions:
+     - Account > Workers Pipelines (Edit)
+     - Account > Queues (Edit)
+     - Account > Vectorize (Edit)
+     - Account > Email Routing Addresses (Edit)
+     - Account > Email Routing Addresses (Read)
+     - Account > Cloudflare Pages (Edit)
+     - Account > Workers R2 Storage (Edit)
+     - Account > Workers Tail (Read)
+     - Account > Logs (Read)
+     - Account > Workers KV Storage (Edit)
+     - Account > Workers Scripts (Edit)
+     - Account > Workers Scripts (Read)
+     - Account > Account Settings (Read)
+     - User > Memberships (Read)
+     - User > User Details (Read)
+     - Zone > Email Routing Rules (Edit)
+     - Zone > Email Routing Rules (Read)
+     - Zone > Zone Settings (Edit)
+     - Zone > Zone (Edit)
+     - Zone > Workers Routes (Edit)
+     - Zone > DNS (Edit)
+   - Copy the token as your `cloudflare_api_key`
+   - For `cloudflare_account_id`:
+     - Go to dashboard
+     - Look at URL: `https://dash.cloudflare.com/<account_id>/...`
+     - Or find it in "Account Home" > "Account ID"
+
+2. **GitHub Credentials**
+   - Your `github_username` is your GitHub username
+   - For `repo_access_token`:
+     - Go to GitHub Settings
+     - Click your profile picture in the top right
+     - Click "Settings" ( scroll down bottom left )
+     - Click "Developer settings" > "Personal access tokens" > "Tokens (classic)"
+     - Click "Generate new token"
+     - Name it "Your Project Name"
+     - Select scopes:
+       - repo (all)
+       - workflow
+       - delete_repo
+     - Click "Generate token"
+     - Copy the token immediately (you won't see it again)
+
+3. **Supabase Credentials**
+   - Log in to Supabase dashboard
+   - Select your project / create a new project
+   - Go to Project Settings > Data API
+   - Copy "Project URL" as your `supabase_url`
+   - Go to Project Settings > API Keys
+   - Copy "anon public" key as your `supabase_anonkey`
+
+## Step 8: Update Global Config
+Upon your global config to add required keys:
+```bash
+cursor ~/.rapid_stack/config.yml
+```
+Add these to `~/.rapid_stack/config.yml`:
+- [ ] cloudflare_api_key
+- [ ] cloudflare_account_id
+- [ ] github_username
+- [ ] repo_access_token
+- [ ] email
+
+## Step 9: Update Local Config
+Add these to `.rapidrc`:
+- [ ] supabase_url
+- [ ] supabase_anonkey
+
+## Step 10: Create Static Site
+Run this command in cursor terminal:
+```bash
+rapid build:static --yes --force
+```
+- `--force` will overwrite existing files
+- `--yes` will skip the prompt to confirm changes
+
+You should now have a static site fully configured with Supabase auth as the backend (BaaS).
+
+## Step 11: Start Development Server
+```bash
+ng serve
+```
+
+Happy coding! CODEHANCE.COM 🚀
+
+
+
+
+
+
+
+
+
+
+
