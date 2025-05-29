@@ -1,0 +1,51 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
+
+@Component({
+  selector: 'app-signup',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './signup.page.html',
+  styleUrls: ['./signup.page.scss']
+})
+export class SignupPage implements OnInit {
+  fullName: string = '';
+  email: string = '';
+  password: string = '';
+  verifyPassword: string = '';
+  errorMessage: string = '';
+
+  constructor(
+    private AuthService: AuthService,
+    private router: Router
+  ) {}
+
+  ngOnInit() {
+    console.log('SignupPage initialized');
+  }
+
+  async onSubmit() {
+    try {
+      const { data, error } = await this.AuthService.signUp(
+        this.email,
+        this.password,
+        { full_name: this.fullName }
+      );
+
+      if (error) {
+        console.error('Signup error:', error);
+        this.errorMessage = error.message;
+        return;
+      }
+
+      console.log('Signup successful:', data);
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Unexpected error during signup:', error);
+      this.errorMessage = 'An unexpected error occurred. Please try again.';
+    }
+  }
+} 

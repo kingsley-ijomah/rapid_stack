@@ -1,0 +1,62 @@
+<div class="signup-container">
+  <form (ngSubmit)="onSubmit()" #signupForm="ngForm">
+    <h2>Sign Up</h2>
+    
+    <div class="form-group">
+      <input
+        type="text"
+        id="fullName"
+        name="fullName"
+        [(ngModel)]="fullName"
+        placeholder="Enter your full name"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <input
+        type="email"
+        id="email"
+        name="email"
+        [(ngModel)]="email"
+        placeholder="Enter your email"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        placeholder="Enter your password"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <input
+        type="password"
+        id="verifyPassword"
+        name="verifyPassword"
+        [(ngModel)]="verifyPassword"
+        placeholder="Verify your password"
+        required
+      >
+    </div>
+
+    <button type="submit" [disabled]="!signupForm.form.valid || password !== verifyPassword">Sign Up</button>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="password !== verifyPassword && verifyPassword" class="error-message">
+      Passwords do not match
+    </div>
+
+    <div class="login-link">
+      Already have an account? <a routerLink="/login">Login</a>
+    </div>
+  </form>
+</div> 

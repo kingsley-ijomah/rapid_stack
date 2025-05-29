@@ -1,0 +1,25 @@
+<div class="dashboard-container">
+  <app-header></app-header>
+  <div class="agents-section">
+    <div class="agents-grid">
+      <app-agent-card 
+        name="Content Wizard" 
+        description="Convert YouTube transcripts into blog posts and social media content."
+        route="/content-wizard">
+        <span icon>🪄</span>
+      </app-agent-card>
+      <app-agent-card name="CRM Genius" description="Manage your customer relationships with ease." [comingSoon]="true">
+        <span icon>🤝</span>
+      </app-agent-card>
+      <app-agent-card name="Transcript Extractor" description="Create accurate YouTube video transcripts." [comingSoon]="true">
+        <span icon>🎬</span>
+      </app-agent-card>
+      <app-agent-card name="Audience Finder" description="Find people talking about the problems you solve." [comingSoon]="true">
+        <span icon>🔍</span>
+      </app-agent-card>
+      <app-agent-card name="Mailing List Manager" description="Manage and grow your email subscriber lists." [comingSoon]="true">
+        <span icon>📧</span>
+      </app-agent-card>
+    </div>
+  </div>
+</div> 
